@@ -39,7 +39,7 @@ const timeline = [
 
 export function CompanyTimeline() {
   return (
-    <section className="safari-section" style={{ background: "#f0ebe0" }}>
+    <section className="safari-section section-bg-cream">
       <div className="safari-container">
         <div className="editorial-heading">
           <div>

@@ -100,7 +100,7 @@ export default async function TrainingPage() {
       />
 
       {/* Hero */}
-      <section className="safari-page-hero" style={{ minHeight: "70vh" }}>
+      <section className="safari-page-hero page-hero-min-height-70">
         <Image
           src={category.image || siteImages.aboutPage.office.src}
           alt={category.title}
@@ -195,7 +195,7 @@ export default async function TrainingPage() {
       </section>
 
       {/* How It Works */}
-      <section className="safari-section" style={{ background: "#f0ebe0" }}>
+      <section className="safari-section section-bg-cream">
         <div className="safari-container">
           <div className="editorial-heading">
             <div>
@@ -235,7 +235,7 @@ export default async function TrainingPage() {
       </section>
 
       {/* Outcomes */}
-      <section className="safari-section" style={{ background: "var(--brand)" }}>
+      <section className="safari-section section-bg-brand">
         <div className="safari-container">
           <div className="editorial-heading">
             <div>
@@ -243,9 +243,9 @@ export default async function TrainingPage() {
                 <span className="safari-eyebrow-line" />
                 <span>What You Gain</span>
               </div>
-              <h2 style={{ color: "white" }}>Training Outcomes</h2>
+              <h2 className="text-white">Training Outcomes</h2>
             </div>
-            <p style={{ color: "rgba(255,255,255,0.6)" }}>
+            <p className="text-white/60">
               Our programs are designed to give you the skills, experience and
               professional connections to build a successful career in tourism.
             </p>
@@ -273,7 +273,7 @@ export default async function TrainingPage() {
       </section>
 
       {/* Application Form */}
-      <section id="apply" className="safari-section scroll-mt-24" style={{ background: "#faf7f0" }}>
+      <section id="apply" className="safari-section scroll-mt-24 section-bg-ivory">
         <div className="safari-container">
           <div className="mx-auto max-w-3xl">
             <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm dark:border-slate-700/50 dark:bg-slate-900 sm:p-10">
@@ -284,29 +284,20 @@ export default async function TrainingPage() {
       </section>
 
       {/* CTA Strip */}
-      <section
-        className="safari-section"
-        style={{ background: "#1a3a2a", textAlign: "center", borderTop: "1px solid rgba(201,168,76,0.15)" }}
-      >
+      <section className="safari-section section-bg-dark">
         <div className="safari-container">
-          <div className="safari-eyebrow" style={{ justifyContent: "center" }}>
+          <div className="safari-eyebrow section-bg-dark-eyebrow">
             <span className="safari-eyebrow-line" />
             <span>Ready to Start?</span>
           </div>
-          <h2 style={{ color: "white", maxWidth: "700px", margin: "0 auto" }}>
+          <h2 className="section-bg-dark-heading">
             Begin Your Tourism Career With Us
           </h2>
-          <p
-            style={{
-              color: "rgba(255,255,255,0.6)",
-              maxWidth: "500px",
-              margin: "1.5rem auto 2rem",
-            }}
-          >
+          <p className="section-bg-dark-text">
             Send us your application and our team will guide you through the
             next steps toward a professional tourism career.
           </p>
-          <div className="hero-actions" style={{ justifyContent: "center" }}>
+          <div className="hero-actions hero-actions-center">
             <Link className="safari-button safari-button-ivory" href="#apply">
               Apply Now
               <ArrowRight width={14} height={14} />

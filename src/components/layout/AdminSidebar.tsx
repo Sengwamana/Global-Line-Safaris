@@ -110,9 +110,9 @@ export function AdminSidebar({ collapsed, onToggle, mobileOpen, onNavigate }: Ad
         "admin-sidebar fixed left-0 top-0 z-40 flex h-screen flex-col border-r bg-white transition-all duration-300 dark:bg-slate-950/95",
         collapsed ? "w-[68px]" : "w-60",
         mobileOpen && "admin-sidebar-open",
-        "border-slate-200/60 dark:border-slate-800/60"
+        "border-slate-200/60 dark:border-slate-800/60",
+        collapsed ? "admin-sidebar-no-shadow" : "admin-sidebar-shadow"
       )}
-      style={{ boxShadow: collapsed ? "none" : "inset -1px 0 0 rgba(0,0,0,0.02)" }}
     >
       <div className="flex h-14 items-center justify-between border-b border-slate-100 px-3 dark:border-slate-800/50">
         <div className="admin-sidebar-brand"><Logo href="/admin/dashboard" size="sm" showWordmark={false} /></div>

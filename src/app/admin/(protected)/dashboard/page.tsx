@@ -132,7 +132,7 @@ function ChartTooltip({ active, payload, label }: any) {
       {payload.map((item: any, i: number) => (
         <div key={i} className="flex items-center justify-between gap-4 py-0.5">
           <span className="flex items-center gap-1.5 text-slate-500 capitalize">
-            <span className="size-2 rounded-full" style={{ backgroundColor: item.color }} />
+            <span className="size-2 rounded-full" data-color={item.color} />
             {item.name}:
           </span>
           <span className="font-bold text-slate-900 dark:text-white">{item.value}</span>

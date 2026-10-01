@@ -15,7 +15,7 @@ export function CTASection({ section }: { section?: HomepageSectionData }) {
           {section?.subtitle ||
             "Tell us what you dream of experiencing. We'll help you plan a journey through Rwanda and East Africa, shaped around you."}
         </p>
-        <div className="hero-actions" style={{ justifyContent: "center" }}>
+        <div className="hero-actions hero-actions-center">
           <Link
             className="safari-button safari-button-ivory"
             href={section?.ctaUrl || "/plan-your-trip"}

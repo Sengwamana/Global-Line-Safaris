@@ -48,8 +48,7 @@ export function FloatingWhatsApp() {
         rel="noopener noreferrer"
         aria-label={ariaLabel}
         title="Chat with Global Line Safaris"
-        className="group flex h-16 w-16 items-center justify-center rounded-full text-white shadow-lift transition-all duration-300 hover:scale-[1.08] hover:shadow-glow-accent-strong focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:outline-none sm:w-auto sm:min-w-0 sm:px-0 sm:hover:px-5"
-        style={{ backgroundColor: WHATSAPP_GREEN }}
+        className="group flex h-16 w-16 items-center justify-center rounded-full text-white shadow-lift transition-all duration-300 hover:scale-[1.08] hover:shadow-glow-accent-strong focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:outline-none sm:w-auto sm:min-w-0 sm:px-0 sm:hover:px-5 whatsapp-green"
       >
         <span
           aria-hidden="true"

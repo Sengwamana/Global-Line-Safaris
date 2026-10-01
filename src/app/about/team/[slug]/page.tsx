@@ -82,7 +82,7 @@ export default async function TeamMemberPage({ params }: TeamMemberPageProps) {
       />
 
       {/* Hero */}
-      <section className="safari-page-hero" style={{ minHeight: "50vh" }}>
+      <section className="safari-page-hero page-hero-min-height-50">
         <div className="safari-container page-hero-content">
           <nav aria-label="Breadcrumb" className="safari-breadcrumb">
             <Link href="/">Home</Link>

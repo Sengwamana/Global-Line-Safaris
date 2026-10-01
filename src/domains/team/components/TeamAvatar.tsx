@@ -34,22 +34,20 @@ export function TeamAvatar({ slug, photo, name, size = 64, showLabel = false }: 
   const hasImage = Boolean(resolvedSrc);
 
   return (
-    <div className="flex flex-col items-center" style={{ width: size }}>
+    <div className="team-avatar">
       {hasImage ? (
         <Image
           src={resolvedSrc as string}
           alt={`${resolvedName} — Global Line Safaris`}
           width={size}
           height={size}
-          className="rounded-xl object-cover"
-          style={{ width: size, height: size }}
+          className="team-avatar-img"
         />
       ) : (
         <div
           role="img"
           aria-label={`${resolvedName} — Global Line Safaris`}
-          className="flex items-center justify-center rounded-xl bg-gradient-to-br from-brand to-brand/70 font-bold text-white shadow-sm"
-          style={{ width: size, height: size, fontSize: Math.round(size * 0.34) }}
+          className="team-avatar-fallback"
         >
           {initials}
         </div>

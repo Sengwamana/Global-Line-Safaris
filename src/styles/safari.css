@@ -1951,6 +1951,110 @@ a.safari-topbar-item:hover,
 }
 
 /* ---------------------------------------------------------------------------
+   INLINE STYLE REPLACEMENTS — CSP-safe utility classes
+   --------------------------------------------------------------------------- */
+.section-bg-cream {
+  background: #f0ebe0;
+}
+
+.section-bg-brand {
+  background: var(--brand);
+}
+
+.section-bg-ivory {
+  background: #faf7f0;
+}
+
+.section-bg-dark {
+  background: #1a3a2a;
+  text-align: center;
+  border-top: 1px solid rgba(201, 168, 76, 0.15);
+}
+
+.section-bg-dark h2 {
+  color: white;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.section-bg-dark p {
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 500px;
+  margin: 1.5rem auto 2rem;
+}
+
+.section-bg-dark .safari-eyebrow {
+  justify-content: center;
+}
+
+.section-bg-dark .hero-actions {
+  justify-content: center;
+}
+
+.section-bg-dark-eyebrow {
+  justify-content: center;
+}
+
+.section-bg-dark-heading {
+  color: white;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.section-bg-dark-text {
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 500px;
+  margin: 1.5rem auto 2rem;
+}
+
+/* Team avatar */
+.team-avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.team-avatar-img {
+  border-radius: 0.75rem;
+  object-fit: cover;
+}
+
+.team-avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  background: linear-gradient(to bottom right, var(--brand), rgba(15, 35, 24, 0.7));
+  font-weight: 700;
+  color: white;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.page-hero-min-height-50 {
+  min-height: 50vh;
+}
+
+.page-hero-min-height-70 {
+  min-height: 70vh;
+}
+
+.hero-actions-center {
+  justify-content: center;
+}
+
+.whatsapp-green {
+  background-color: #25d366;
+}
+
+.admin-sidebar-shadow {
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.02);
+}
+
+.admin-sidebar-no-shadow {
+  box-shadow: none;
+}
+
+/* ---------------------------------------------------------------------------
    SKIP LINK & FOCUS
    --------------------------------------------------------------------------- */
 .skip-link {
