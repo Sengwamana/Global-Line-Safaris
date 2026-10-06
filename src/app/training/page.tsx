@@ -221,7 +221,7 @@ export default async function TrainingPage() {
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <div>
-                  <h3 className="font-serif text-xl font-normal text-slate-900">
+                  <h3 className="font-serif text-xl font-bold text-slate-900">
                     {step.title}
                   </h3>
                   <p className="mt-2 text-sm leading-relaxed text-slate-600">

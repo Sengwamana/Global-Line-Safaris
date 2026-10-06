@@ -176,7 +176,7 @@ export default async function TeamMemberPage({ params }: TeamMemberPageProps) {
                 <span className="safari-eyebrow-line" />
                 <span>Biography</span>
               </div>
-              <h2 className="font-serif text-3xl font-light text-slate-900 dark:text-white sm:text-4xl">
+              <h2 className="font-serif text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">
                 About {member.name.split(" ")[0]}
               </h2>
               <div className="mt-6 space-y-4 text-base leading-relaxed text-slate-600 dark:text-slate-300">
@@ -185,7 +185,7 @@ export default async function TeamMemberPage({ params }: TeamMemberPageProps) {
 
               {member.expertise.length > 0 && (
                 <div className="mt-10">
-                  <h3 className="font-serif text-xl font-normal text-slate-900 dark:text-white">
+                  <h3 className="font-serif text-xl font-bold text-slate-900 dark:text-white">
                     Areas of Expertise
                   </h3>
                   <div className="mt-4 flex flex-wrap gap-2">
