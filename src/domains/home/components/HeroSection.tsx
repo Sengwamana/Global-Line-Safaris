@@ -87,6 +87,10 @@ export function HeroSection({
             Explore Destinations
             <ArrowRight width={14} height={14} />
           </Link>
+          <Link className="safari-button safari-button-outline" href="/training">
+            Training & Internships
+            <ArrowRight width={14} height={14} />
+          </Link>
           <Link
             className="safari-text-link light-link"
             href={ctaUrl || "/plan-your-trip"}
