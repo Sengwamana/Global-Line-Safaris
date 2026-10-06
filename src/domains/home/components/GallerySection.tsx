@@ -48,14 +48,13 @@ export function GallerySection({
               key={image.id}
               aria-label="Explore the travel gallery"
             >
-              <Image
+<Image
                 src={image.url}
                 alt={image.alt || "Travel photography from Global Line Safaris"}
                 fill
                 sizes="(max-width: 640px) 100vw, 33vw"
                 loading="lazy"
                 decoding="async"
-                placeholder="skeleton"
               />
             </Link>
           ))}
