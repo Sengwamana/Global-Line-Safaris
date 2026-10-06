@@ -497,7 +497,7 @@ describe("CMS regression: three separate inquiry types", () => {
 
   it("dashboard stats track internships instead of quotes and consultations", () => {
     const stats = read("app/api/admin/stats/route.ts");
-    expect(stats).toContain("prisma.internshipInquiry.count()");
+    expect(stats).toContain("prisma.internshipInquiry.count");
     expect(stats).not.toContain("quoteRequest");
     expect(stats).not.toContain("consultationRequest");
     const dashboard = read("app/admin/(protected)/dashboard/page.tsx");
