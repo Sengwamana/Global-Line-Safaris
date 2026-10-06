@@ -15,7 +15,12 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default async function TourPackagesPage() {
+interface TourPackagesPageProps {
+  searchParams?: Promise<{ page?: string; q?: string; category?: string; duration?: string }>;
+}
+
+export default async function TourPackagesPage({ searchParams }: TourPackagesPageProps) {
+  const params = (await searchParams) ?? {};
   const packages = await getTourPackages();
 
   return (
@@ -28,7 +33,7 @@ export default async function TourPackagesPage() {
         breadcrumb={[{ label: "Tour Packages", href: "/tour-packages" }]}
       />
 
-      <section className="safari-section"><div className="safari-container"><DiscoveryGrid packages={packages} /></div></section>
+      <section className="safari-section"><div className="safari-container"><DiscoveryGrid packages={packages} params={params} /></div></section>
 
       <CTASection />
     </div>

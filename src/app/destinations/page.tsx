@@ -15,7 +15,12 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default async function DestinationsPage() {
+interface DestinationsPageProps {
+  searchParams?: Promise<{ page?: string; q?: string; category?: string }>;
+}
+
+export default async function DestinationsPage({ searchParams }: DestinationsPageProps) {
+  const params = (await searchParams) ?? {};
   const destinations = await getDestinations();
 
   return (
@@ -28,7 +33,7 @@ export default async function DestinationsPage() {
         breadcrumb={[{ label: "Destinations", href: "/destinations" }]}
       />
 
-      <section className="safari-section"><div className="safari-container"><DiscoveryGrid destinations={destinations} /></div></section>
+      <section className="safari-section"><div className="safari-container"><DiscoveryGrid destinations={destinations} params={params} /></div></section>
 
       <CTASection />
     </div>

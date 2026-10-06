@@ -1,19 +1,20 @@
-"use client";
-import { useState } from "react";
 import Link from "next/link";
 import { DestinationCard } from "@/components/shared/DestinationCard";
-import { CountryFlagCards, buildCountryOptions } from "@/components/shared/CountryFlagCards";
+import { buildCountryOptions } from "@/lib/country";
 import { PackageCard } from "@/domains/packages/components/PackageCard";
+import { DiscoveryToolbar } from "@/components/shared/DiscoveryToolbar";
+import { Pagination } from "@/components/shared/Pagination";
 import type { Destination, TourPackage } from "@/lib/content/types";
+import { buildQueryString, clampPage, paginate } from "@/lib/utils";
+
+const PAGE_SIZE = 9;
 
 type Props =
-  | { destinations: Destination[]; packages?: never }
-  | { packages: TourPackage[]; destinations?: never };
+  | { destinations: Destination[]; packages?: never; params: { page?: string; q?: string; category?: string; duration?: string } }
+  | { packages: TourPackage[]; destinations?: never; params: { page?: string; q?: string; category?: string; duration?: string } };
 
 export function DiscoveryGrid(props: Props) {
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("");
-  const [duration, setDuration] = useState("");
+  const params = props.params ?? {};
   const isDestinations = !!props.destinations;
   const records = props.destinations || props.packages || [];
 
@@ -24,91 +25,75 @@ export function DiscoveryGrid(props: Props) {
         .filter((v): v is string => !!v),
     ),
   ].sort();
-  // Packages get proper flag cards; destinations keep the plain select because
-  // their categories are not always countries.
-  const countryOptions = !isDestinations
-    ? buildCountryOptions(records as TourPackage[])
-    : [];
+  const countryOptions = !isDestinations ? buildCountryOptions(records as TourPackage[]) : [];
   const durationOptions = !isDestinations
     ? [...new Set(records.map((r) => (r as TourPackage).duration).filter((v): v is string => !!v))].sort()
     : [];
 
-  const results = records.filter((r) => {
+  const category = categoryOptions.includes(params.category ?? "") ? (params.category as string) : "";
+  const duration = durationOptions.includes(params.duration ?? "") ? (params.duration as string) : "";
+  const query = (params.q ?? "").trim().toLowerCase();
+
+  const filtered = records.filter((r) => {
     const title = "name" in r ? r.name : r.title;
     const description = "description" in r ? r.description : r.overview;
     const matchesCategory = !category || ("category" in r && (r.category || "") === category);
     const matchesDuration = !duration || ("duration" in r && (r.duration || "") === duration);
-    const matchesQuery = `${title} ${description} ${r.location || ""}`
-      .toLowerCase()
-      .includes(query.toLowerCase().trim());
+    const matchesQuery =
+      !query ||
+      `${title} ${description} ${r.location || ""}`.toLowerCase().includes(query);
     return matchesCategory && matchesDuration && matchesQuery;
   });
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const page = clampPage(params.page, totalPages);
+  const { items } = paginate(filtered, page, PAGE_SIZE);
+
+  const hrefWith = (overrides: Record<string, string | undefined>) => {
+    const values: Record<string, string | undefined> = {
+      category: category || undefined,
+      duration: duration || undefined,
+      q: (params.q ?? "").trim() || undefined,
+      ...overrides,
+    };
+    if (values.q === undefined) delete values.q;
+    return buildQueryString(values);
+  };
+
+  const hasActiveFilter = Boolean(category || duration || query);
+
   return (
     <div>
-      {countryOptions.length > 0 && (
-        <div className="mb-8">
-          <CountryFlagCards
-            options={countryOptions}
-            selected={category}
-            onSelect={(c) => {
-              setCategory(c);
-              setQuery("");
-            }}
-          />
-        </div>
-      )}
-      <div className="discovery-toolbar">
-        <label htmlFor="discovery-search">
-          Find your {isDestinations ? "destination" : "journey"}
-          <input
-            id="discovery-search"
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={isDestinations ? "Search destinations…" : "Search tours, places, experiences…"}
-          />
-        </label>
-        {categoryOptions.length > 1 && isDestinations && (
-          <label htmlFor="discovery-category">
-            Explore by category
-            <select id="discovery-category" value={category} onChange={(e) => setCategory(e.target.value)}>
-              <option value="">{isDestinations ? "All destinations" : "All countries"}</option>
-              {categoryOptions.map((o) => (
-                <option key={o} value={o}>
-                  {o}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
-        {durationOptions.length > 1 && (
-          <label htmlFor="discovery-duration">
-            Filter by duration
-            <select id="discovery-duration" value={duration} onChange={(e) => setDuration(e.target.value)}>
-              <option value="">All journeys</option>
-              {durationOptions.map((o) => (
-                <option key={o} value={o}>
-                  {o}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
-        <p className="discovery-results" aria-live="polite">
-          {results.length} {isDestinations ? "destinations" : "journeys"} to explore
-        </p>
+      <DiscoveryToolbar
+        isDestinations={isDestinations}
+        countryOptions={countryOptions}
+        categoryOptions={categoryOptions}
+        durationOptions={durationOptions}
+      />
+
+      <div className="discovery-results mb-8" aria-live="polite">
+        {filtered.length} {isDestinations ? "destinations" : "journeys"} to explore
       </div>
-      {results.length ? (
-        <div className="discovery-grid">
-          {results.map((r) =>
-            "name" in r ? (
-              <DestinationCard key={r.slug} destination={r} />
-            ) : (
-              <PackageCard key={r.slug} pkg={r} />
-            )
-          )}
-        </div>
+
+      {items.length ? (
+        <>
+          <div className="discovery-grid">
+            {items.map((r) =>
+              "name" in r ? (
+                <DestinationCard key={r.slug} destination={r} />
+              ) : (
+                <PackageCard key={r.slug} pkg={r} />
+              )
+            )}
+          </div>
+
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            makeHref={(p) => hrefWith({ page: p > 1 ? String(p) : undefined })}
+            pageLabel={`${isDestinations ? "Destinations" : "Tour packages"} pages`}
+          />
+        </>
       ) : (
         <div className="discovery-empty">
           <h2>{records.length ? "A different path awaits." : "Let's create a journey for you."}</h2>
@@ -118,16 +103,11 @@ export function DiscoveryGrid(props: Props) {
               : "Tell us your interests and we'll help you plan your trip."}
           </p>
           {records.length ? (
-            <button
-              className="safari-button mt-6"
-              onClick={() => {
-                setQuery("");
-                setCategory("");
-                setDuration("");
-              }}
-            >
-              Clear filters
-            </button>
+            hasActiveFilter ? (
+              <Link className="safari-button mt-6" href={hrefWith({})}>
+                Clear filters
+              </Link>
+            ) : null
           ) : (
             <Link className="safari-button mt-6" href="/plan-your-trip">
               Plan Your Trip

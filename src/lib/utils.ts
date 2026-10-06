@@ -29,6 +29,43 @@ export function slugify(str: string): string {
     .replace(/^-+|-+$/g, "")
 }
 
+/** Builds a search string from a record, dropping undefined/empty values. */
+export function buildQueryString(values: Record<string, string | undefined>): string {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(values)) {
+    if (value) params.set(key, value);
+  }
+  const qs = params.toString();
+  return qs ? `?${qs}` : "";
+}
+
+/** Clamps a raw page value to a valid page number within `totalPages`. */
+export function clampPage(raw: string | undefined | null, totalPages: number): number {
+  const n = Math.floor(Number(raw));
+  if (!Number.isFinite(n) || n < 1) return 1;
+  return Math.min(n, Math.max(totalPages, 1));
+}
+
+/** Splits an array into a page slice; returns items + derived pagination info. */
+export function paginate<T>(
+  items: T[],
+  page: number,
+  pageSize: number,
+): { items: T[]; page: number; totalPages: number; total: number } {
+  const total = items.length;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const start = (safePage - 1) * pageSize;
+  return { items: items.slice(start, start + pageSize), page: safePage, totalPages, total };
+}
+
+export interface PageParams {
+  page?: string;
+  q?: string;
+  category?: string;
+  duration?: string;
+}
+
 export function truncate(str: string, length: number): string {
   if (str.length <= length) return str
   return str.slice(0, length) + "..."

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, ArrowUpRight, BookOpen, CalendarDays, Clock, User } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, BookOpen, CalendarDays, Clock, Facebook, Linkedin, Twitter } from "lucide-react";
 import { PageHero } from "@/components/shared/PageHero";
 import { CTASection } from "@/domains/home/components/CTASection";
 import { BlogCard } from "@/domains/blog/components/BlogCard";
@@ -40,6 +40,15 @@ function toParagraphs(text: string): string[] {
     .filter(Boolean);
 }
 
+function authorInitials(name: string) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
+
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
   const [post, allPosts] = await Promise.all([getBlogPost(slug), getBlogPosts()]);
@@ -56,6 +65,16 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const coverImage = post.image || "/images/rwanda-hills.jpg";
   const author = post.author ?? "Global Line Safaris";
 
+  const baseUrl = siteConfig.siteUrl.replace(/\/$/, "");
+  const pageUrl = `${baseUrl}/blog/${post.slug}`;
+  const shareText = encodeURIComponent(post.title);
+  const shareUrl = encodeURIComponent(pageUrl);
+
+  const ordered = allPosts.length > 1 ? allPosts : [];
+  const currentIndex = ordered.findIndex((p) => p.slug === post.slug);
+  const prev = currentIndex > 0 ? ordered[currentIndex - 1] : null;
+  const next = currentIndex >= 0 && currentIndex < ordered.length - 1 ? ordered[currentIndex + 1] : null;
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -68,22 +87,21 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       "@type": "TravelAgency",
       name: siteConfig.name,
       url: siteConfig.siteUrl,
-      logo: { "@type": "ImageObject", url: `${siteConfig.siteUrl.replace(/\/$/, "")}/gls/logo.png` },
+      logo: { "@type": "ImageObject", url: `${baseUrl}/gls/logo.png` },
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `${siteConfig.siteUrl.replace(/\/$/, "")}/blog/${post.slug}`,
+      "@id": pageUrl,
     },
   };
 
-  const baseUrl = siteConfig.siteUrl.replace(/\/$/, "");
   const breadcrumbData = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: `${baseUrl}/` },
       { "@type": "ListItem", position: 2, name: "Blog", item: `${baseUrl}/blog` },
-      { "@type": "ListItem", position: 3, name: post.title, item: `${baseUrl}/blog/${post.slug}` },
+      { "@type": "ListItem", position: 3, name: post.title, item: pageUrl },
     ],
   };
 
@@ -111,21 +129,26 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <section className="bg-white py-20 dark:bg-slate-950 sm:py-28">
         <div className="safari-container">
           <article className="mx-auto max-w-3xl">
-            <div className="mb-10 flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-slate-200 pb-7 text-sm text-slate-500 dark:text-slate-400">
-              <span className="inline-flex items-center gap-2">
-                <User className="size-4" /> {author}
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <CalendarDays className="size-4" />
-                {post.createdAt ? formatDate(post.createdAt) : ""}
-              </span>
-              {post.readTime ? (
-                <span className="inline-flex items-center gap-2">
-                  <Clock className="size-4" /> {post.readTime} min read
+            <div className="mb-10 flex flex-wrap items-center gap-x-6 gap-y-4 border-b border-slate-200 pb-7 dark:border-slate-800">
+              <span className="inline-flex items-center gap-3">
+                <span aria-hidden="true" className="journal-avatar h-11 w-11 text-sm">
+                  {authorInitials(author)}
                 </span>
-              ) : null}
-              <span className="inline-flex items-center gap-2">
-                <BookOpen className="size-4" /> {post.category ?? "Travel"}
+                <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">{author}</span>
+              </span>
+              <span className="inline-flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-500 dark:text-slate-400">
+                <span className="inline-flex items-center gap-2">
+                  <CalendarDays className="size-4" />
+                  {post.createdAt ? formatDate(post.createdAt) : ""}
+                </span>
+                {post.readTime ? (
+                  <span className="inline-flex items-center gap-2">
+                    <Clock className="size-4" /> {post.readTime} min read
+                  </span>
+                ) : null}
+                <span className="inline-flex items-center gap-2">
+                  <BookOpen className="size-4" /> {post.category ?? "Travel"}
+                </span>
               </span>
             </div>
 
@@ -142,14 +165,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             )}
 
             {paragraphs.length > 0 ? (
-              <div className="space-y-5">
+              <div className="article-prose">
                 {paragraphs.map((p, i) => (
-                  <p
-                    key={i}
-                    className="text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg"
-                  >
-                    {p}
-                  </p>
+                  <p key={i}>{p}</p>
                 ))}
               </div>
             ) : (
@@ -158,7 +176,68 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               </p>
             )}
 
-            <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-slate-200 pt-8">
+            <div className="article-share-row">
+              <span className="article-share-label">Share this story</span>
+              <a
+                className="article-share"
+                target="_blank"
+                rel="noopener noreferrer"
+                href={`https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`}
+                aria-label="Share on X (Twitter)"
+              >
+                <Twitter className="h-4 w-4" />
+              </a>
+              <a
+                className="article-share"
+                target="_blank"
+                rel="noopener noreferrer"
+                href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`}
+                aria-label="Share on Facebook"
+              >
+                <Facebook className="h-4 w-4" />
+              </a>
+              <a
+                className="article-share"
+                target="_blank"
+                rel="noopener noreferrer"
+                href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`}
+                aria-label="Share on LinkedIn"
+              >
+                <Linkedin className="h-4 w-4" />
+              </a>
+            </div>
+
+            {(prev || next) && (
+              <div className="article-nav">
+                {prev ? (
+                  <Link href={`/blog/${prev.slug}`} className="article-nav-link">
+                    <span className="article-nav-label">Previous story</span>
+                    <span className="article-nav-title">{prev.title}</span>
+                    <span className="article-nav-sub">
+                      <ArrowLeft className="size-3.5" /> {prev.category ?? "Journal"}
+                    </span>
+                  </Link>
+                ) : (
+                  <span aria-hidden="true" />
+                )}
+                {next ? (
+                  <Link
+                    href={`/blog/${next.slug}`}
+                    className="article-nav-link text-right"
+                  >
+                    <span className="article-nav-label">Next story</span>
+                    <span className="article-nav-title">{next.title}</span>
+                    <span className="article-nav-sub justify-end">
+                      {next.category ?? "Journal"} <ArrowRight className="size-3.5" />
+                    </span>
+                  </Link>
+                ) : (
+                  <span aria-hidden="true" />
+                )}
+              </div>
+            )}
+
+            <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-slate-200 pt-8 dark:border-slate-800">
               <Link
                 href="/blog"
                 className="inline-flex items-center gap-2 text-sm font-semibold text-brand transition-all hover:gap-3 dark:text-accent"
@@ -191,7 +270,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 All Posts <ArrowUpRight className="size-4" />
               </Link>
             </div>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="journal-grid">
               {suggestions.map((p) => (
                 <BlogCard key={p.slug} post={p} />
               ))}
