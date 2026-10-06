@@ -69,7 +69,7 @@ export function CompanyTimeline() {
               <div className="relative pl-6">
                 <div className="absolute left-0 top-2 h-full w-px bg-accent/30" />
                 <div className="absolute -left-[5px] top-2 h-2.5 w-2.5 rounded-full bg-accent" />
-                <h3 className="font-serif text-xl font-normal text-slate-900">
+                <h3 className="font-serif text-xl font-bold text-slate-900">
                   {item.title}
                 </h3>
                 <p className="mt-2 text-sm leading-relaxed text-slate-600">
