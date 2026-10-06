@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
@@ -30,10 +30,29 @@ export function HeroSection({
       }))
     : siteImages.heroSlides;
   const [index, setIndex] = useState(0);
-  const slide = slides[index % slides.length];
+  const [paused, setPaused] = useState(false);
+
+  const advance = useCallback(
+    () => setIndex((i) => (i + 1) % slides.length),
+    [slides.length],
+  );
+
+  useEffect(() => {
+    if (paused) return;
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+    const timer = setInterval(advance, 6000);
+    return () => clearInterval(timer);
+  }, [advance, paused, index]);
 
   return (
-    <section className="safari-hero" aria-label="Discover Rwanda">
+    <section
+      className="safari-hero"
+      aria-label="Discover Rwanda"
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
+    >
       <div className="hero-slides">
         {slides.map((s, i) => (
           <div
@@ -82,7 +101,11 @@ export function HeroSection({
           <span className="hero-scroll-line" />
           <span>Discover</span>
         </a>
-        <div className="hero-controls">
+        <div
+          className="hero-controls"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+        >
           <span aria-live="polite" aria-atomic="true">
             {String(index + 1).padStart(2, "0")}
             <span> / {String(slides.length).padStart(2, "0")}</span>
