@@ -92,6 +92,8 @@ function LogoCard({ partner }: { partner: PartnerLogo }) {
           alt={partner.alt}
           width={partner.width}
           height={partner.height}
+          loading="lazy"
+          decoding="async"
           className="partner-logo"
         />
       </div>

@@ -41,6 +41,8 @@ export function TeamAvatar({ slug, photo, name, size = 64, showLabel = false }: 
           alt={`${resolvedName} — Global Line Safaris`}
           width={size}
           height={size}
+          loading="lazy"
+          decoding="async"
           className="team-avatar-img"
         />
       ) : (

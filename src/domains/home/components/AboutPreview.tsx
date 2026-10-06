@@ -20,6 +20,8 @@ export function AboutPreviewSection({
             alt={image?.alt || siteImages.about.alt}
             fill
             sizes="(max-width: 800px) 100vw, 45vw"
+            loading="lazy"
+            decoding="async"
           />
         </figure>
         <div className="intro-copy">

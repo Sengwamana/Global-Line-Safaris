@@ -7,10 +7,15 @@ import { getTeam, getSeoSetting } from "@/lib/content/service.server";
 import { CTASection } from "@/domains/home/components/CTASection";
 import { siteConfig } from "@/lib/site";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 interface TeamMemberPageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateStaticParams() {
+  const team = await getTeam();
+  return team.members.map((m) => ({ slug: slugify(m.name) }));
 }
 
 function slugify(name: string): string {

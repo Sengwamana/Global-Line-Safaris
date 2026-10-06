@@ -7,15 +7,21 @@ import { CTASection } from "@/domains/home/components/CTASection";
 import { PackageCard } from "@/domains/packages/components/PackageCard";
 import {
   getDestination,
+  getDestinations,
   getTourPackages,
 } from "@/lib/content/service.server";
 import { siteImages } from "@/lib/siteImages";
 import { siteConfig } from "@/lib/site";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 interface DestinationPageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateStaticParams() {
+  const destinations = await getDestinations();
+  return destinations.map((d) => ({ slug: d.slug }));
 }
 
 export async function generateMetadata({ params }: DestinationPageProps) {
@@ -136,6 +142,8 @@ export default async function DestinationDetailPage({ params }: DestinationPageP
                     alt={destination.name}
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"
+                    loading="lazy"
+                    decoding="async"
                     className="object-cover"
                   />
                 </div>

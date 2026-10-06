@@ -25,6 +25,8 @@ export function DestinationCard({
               ? "(max-width: 800px) 100vw, 60vw"
               : "(max-width: 640px) 100vw, 40vw"
           }
+          loading="lazy"
+          decoding="async"
         />
       )}
       <div className="destination-shade" />

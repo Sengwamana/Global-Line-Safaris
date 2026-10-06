@@ -28,6 +28,8 @@ export function BlogCard({ post }: { post: BlogPost }) {
             alt={post.title}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1000px) 50vw, 33vw"
+            loading="lazy"
+            decoding="async"
           />
         )}
         {post.category && (

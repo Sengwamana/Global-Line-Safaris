@@ -5,7 +5,7 @@ import { ServiceList } from "@/domains/services/components/ServiceList";
 import { CTASection } from "@/domains/home/components/CTASection";
 import { siteConfig } from "@/lib/site";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 interface ServicePageProps {
   params: Promise<{ slug: string }>;

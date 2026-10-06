@@ -22,10 +22,15 @@ import { displayPackagePrice } from "@/lib/utils";
 import { siteImages } from "@/lib/siteImages";
 import { siteConfig } from "@/lib/site";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 interface PackagePageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateStaticParams() {
+  const packages = await getTourPackages();
+  return packages.map((pkg) => ({ slug: pkg.slug }));
 }
 
 export async function generateMetadata({ params }: PackagePageProps) {
@@ -238,6 +243,8 @@ export default async function TourPackageDetailPage({ params }: PackagePageProps
                         alt={pkg.title}
                         fill
                         sizes="(max-width: 768px) 100vw, 50vw"
+                        loading="lazy"
+                        decoding="async"
                         className="object-cover"
                       />
                     </div>

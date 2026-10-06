@@ -56,6 +56,8 @@ export function VisionSection() {
             alt={siteImages.aboutPage.teamCollaboration.alt}
             width={1600}
             height={600}
+            loading="lazy"
+            decoding="async"
             className="h-64 sm:h-80 w-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-brand-bg-dark/60 to-transparent" />

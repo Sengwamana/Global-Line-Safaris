@@ -53,6 +53,9 @@ export function GallerySection({
                 alt={image.alt || "Travel photography from Global Line Safaris"}
                 fill
                 sizes="(max-width: 640px) 100vw, 33vw"
+                loading="lazy"
+                decoding="async"
+                placeholder="skeleton"
               />
             </Link>
           ))}

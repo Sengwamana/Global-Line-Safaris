@@ -37,6 +37,7 @@ function FeaturedArticle({ post }: { post: BlogPost }) {
             alt={post.title}
             fill
             sizes="(max-width: 1000px) 100vw, 60vw"
+            priority
           />
         )}
       </div>

@@ -39,6 +39,8 @@ export function FounderProfile({ founder }: FounderProfileProps) {
                 alt={siteImages.aboutPage.office.alt}
                 width={800}
                 height={500}
+                loading="lazy"
+                decoding="async"
                 className="h-56 w-full object-cover"
               />
             </div>

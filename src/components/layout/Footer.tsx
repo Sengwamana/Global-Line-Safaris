@@ -39,6 +39,8 @@ export async function Footer() {
                   alt="Global Line Safaris"
                   fill
                   sizes="132px"
+                  loading="lazy"
+                  decoding="async"
                   className="object-contain"
                 />
               </span>
