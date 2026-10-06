@@ -35,6 +35,8 @@ export function CountryFlag({
       width={640}
       height={480}
       unoptimized
+      loading="lazy"
+      decoding="async"
       className={cn("object-cover", className)}
     />
   );

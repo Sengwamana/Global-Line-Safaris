@@ -9,7 +9,7 @@ import { siteConfig } from "@/lib/site";
 import { CTASection } from "@/domains/home/components/CTASection";
 import { TrainingApplicationForm } from "@/domains/training/components/TrainingApplicationForm";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildPageMetadata('training', {

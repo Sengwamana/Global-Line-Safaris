@@ -7,7 +7,7 @@ import { siteImages } from "@/lib/siteImages";
 import { siteConfig } from "@/lib/site";
 import { Phone, Mail, MapPin, Clock, ShieldCheck, Compass } from "lucide-react";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildPageMetadata('plan-your-trip', {

@@ -106,7 +106,7 @@ export function getServiceCategories() {
   return cached("serviceCategories", loadServiceCategories, CONTENT_TAGS.services)();
 }
 
-export async function getServiceCategory(slug: string): Promise<ServiceCategory | null> {
+async function loadServiceCategory(slug: string): Promise<ServiceCategory | null> {
   const dbCat = await prisma.serviceCategory.findUnique({
     where: { slug },
     include: {
@@ -137,16 +137,24 @@ export async function getServiceCategory(slug: string): Promise<ServiceCategory 
   };
 }
 
+export function getServiceCategory(slug: string) {
+  return cached(`serviceCategory:${slug}`, () => loadServiceCategory(slug), CONTENT_TAGS.services)();
+}
+
 // ---------------------------------------------------------------------------
 // Service highlights — from homepage "services" section items or empty
 // ---------------------------------------------------------------------------
 
-export async function getServiceHighlights(): Promise<Array<{ title: string; description: string; icon: string }>> {
+async function loadServiceHighlights(): Promise<Array<{ title: string; description: string; icon: string }>> {
   const section = await prisma.homepageSection.findUnique({ where: { sectionKey: "services" } });
   if (section?.items) {
     return parseJsonArray<{ icon: string; title: string; description: string }>(section.items);
   }
   return [];
+}
+
+export function getServiceHighlights() {
+  return cached("serviceHighlights", loadServiceHighlights, CONTENT_TAGS.services)();
 }
 
 // ---------------------------------------------------------------------------
@@ -403,12 +411,16 @@ export function getDestinations() {
   return cached("destinations", loadDestinations, CONTENT_TAGS.destinations)();
 }
 
-export async function getDestination(slug: string): Promise<import("@/lib/content/types").Destination | null> {
+async function loadDestination(slug: string): Promise<import("@/lib/content/types").Destination | null> {
   const row = await prisma.destination.findUnique({
     where: { slug },
   });
   if (!row || row.status !== "PUBLISHED") return null;
   return mapDestination(row);
+}
+
+export function getDestination(slug: string) {
+  return cached(`destination:${slug}`, () => loadDestination(slug), CONTENT_TAGS.destinations)();
 }
 
 function mapPackage(row: any): import("@/lib/content/types").TourPackage {
@@ -449,10 +461,14 @@ export function getTourPackages() {
   return cached("tourPackages", loadTourPackages, CONTENT_TAGS.packages)();
 }
 
-export async function getTourPackage(slug: string): Promise<import("@/lib/content/types").TourPackage | null> {
+async function loadTourPackage(slug: string): Promise<import("@/lib/content/types").TourPackage | null> {
   const row = await prisma.tourPackage.findUnique({ where: { slug } });
   if (!row || row.status !== "PUBLISHED") return null;
   return mapPackage(row);
+}
+
+export function getTourPackage(slug: string) {
+  return cached(`tourPackage:${slug}`, () => loadTourPackage(slug), CONTENT_TAGS.packages)();
 }
 
 // ---------------------------------------------------------------------------
@@ -491,14 +507,18 @@ export function getBlogPosts() {
   return cached("blogPosts", loadBlogPosts, CONTENT_TAGS.blog)();
 }
 
-export async function getBlogPost(slug: string): Promise<BlogPost | null> {
+async function loadBlogPost(slug: string): Promise<BlogPost | null> {
   const row = await prisma.blogPost.findUnique({ where: { slug } });
   if (!row || row.status !== "PUBLISHED") return null;
   return mapBlogPost(row);
 }
 
+export function getBlogPost(slug: string) {
+  return cached(`blogPost:${slug}`, () => loadBlogPost(slug), CONTENT_TAGS.blog)();
+}
+
 // Gallery media (public)
-export async function getGalleryImages(): Promise<
+async function loadGalleryImages(): Promise<
   Array<{ id: string; url: string; alt: string | null; width: number | null; height: number | null }>
 > {
   const rows = await prisma.media.findMany({
@@ -514,23 +534,28 @@ export async function getGalleryImages(): Promise<
   }));
 }
 
+export function getGalleryImages() {
+  return cached("galleryImages", loadGalleryImages, CONTENT_TAGS.media)();
+}
+
 // SEO metadata for a page (seeded from /admin/seo)
-export async function getSeoSetting(pageKey: string): Promise<{
+export function getSeoSetting(pageKey: string): Promise<{
   title: string | null;
   description: string | null;
   ogImage: string | null;
   canonicalUrl: string | null;
   indexable: boolean;
 } | null> {
-  const row = await prisma.seoSetting.findUnique({ where: { pageKey } });
-  if (!row) return null;
-  return {
-    title: row.title,
-    description: row.description,
-    ogImage: row.ogImage,
-    canonicalUrl: row.canonicalUrl,
-    indexable: row.indexable,
-  };
+  return getCachedSeoSetting(pageKey).then((row) => {
+    if (!row) return null;
+    return {
+      title: row.title,
+      description: row.description,
+      ogImage: row.ogImage,
+      canonicalUrl: row.canonicalUrl,
+      indexable: row.indexable,
+    };
+  });
 }
 
 /**

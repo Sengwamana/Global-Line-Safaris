@@ -4,7 +4,7 @@ import { IndustriesHero } from "@/domains/industries/components/IndustriesHero";
 import { IndustryGrid } from "@/domains/industries/components/IndustryGrid";
 import { CTASection } from "@/domains/home/components/CTASection";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildPageMetadata('industries', {

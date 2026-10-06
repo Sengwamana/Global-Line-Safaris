@@ -21,6 +21,8 @@ export function WhyChoosePreview({
           alt={siteImages.advisory.alt}
           fill
           sizes="(max-width: 800px) 100vw, 45vw"
+          loading="lazy"
+          decoding="async"
         />
       </div>
       <div className="philosophy-copy">

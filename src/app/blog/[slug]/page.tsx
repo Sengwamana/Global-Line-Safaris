@@ -9,10 +9,15 @@ import { getBlogPost, getBlogPosts } from "@/lib/content/service.server";
 import { siteConfig } from "@/lib/site";
 import { formatDate } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateStaticParams() {
+  const posts = await getBlogPosts();
+  return posts.map((post) => ({ slug: post.slug }));
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps) {
@@ -159,6 +164,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   alt={post.title}
                   fill
                   sizes="(max-width: 768px) 100vw, 768px"
+                  loading="lazy"
+                  decoding="async"
                   className="object-cover"
                 />
               </div>

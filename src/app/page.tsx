@@ -11,7 +11,7 @@ import { PartnersSection } from "@/domains/home/components/PartnersSection";
 import { siteConfig } from "@/lib/site";
 import type { Metadata } from "next";
 import { buildPageMetadata, getServiceCategories, getHomepageContent, getDestinations, getTourPackages, getGalleryImages, getSiteImages } from "@/lib/content/service.server";
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 export async function generateMetadata(): Promise<Metadata> {
   return buildPageMetadata("home", {
     title: `${siteConfig.name} | Rwanda Safaris & East Africa Tours`,

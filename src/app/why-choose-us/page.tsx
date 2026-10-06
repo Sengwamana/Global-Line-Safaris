@@ -4,7 +4,7 @@ import { CTASection } from "@/domains/home/components/CTASection";
 import { WhyChooseHero } from "@/domains/why-choose-us/components/WhyChooseHero";
 import { WhyChoosePillars } from "@/domains/why-choose-us/components/WhyChoosePillars";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildPageMetadata('why-choose-us', {

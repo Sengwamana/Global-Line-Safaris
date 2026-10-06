@@ -5,7 +5,7 @@ import { buildPageMetadata } from "@/lib/content/service.server";
 import { siteImages } from "@/lib/siteImages";
 import { Compass, Eye, Heart, ShieldCheck, Sparkles, Star } from "lucide-react";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildPageMetadata('mission-and-values', {

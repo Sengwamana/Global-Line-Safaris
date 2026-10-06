@@ -9,7 +9,7 @@ import { CompanyTimeline } from "@/domains/about/components/CompanyTimeline";
 import { CompanyValues } from "@/domains/about/components/CompanyValues";
 import { CTASection } from "@/domains/home/components/CTASection";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildPageMetadata('about', {
