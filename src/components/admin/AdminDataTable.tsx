@@ -97,9 +97,11 @@ export function AdminDataTable<T extends Record<string, any>>({
     }
   };
 
+  // Pagination inside the table is zero-based, whereas the API contract is
+  // one-based. Keep that conversion here so every CMS list behaves alike.
   const handlePageChange = (target: number) => {
     if (onPageChange) {
-      onPageChange(target);
+      onPageChange(target + 1);
     } else {
       setPage(target);
     }
@@ -114,7 +116,7 @@ export function AdminDataTable<T extends Record<string, any>>({
     }
   };
 
-  const currentPage = serverSide ? (serverPage ?? 1) - 1 : page;
+  const currentPage = serverSide ? Math.max(0, (serverPage ?? 1) - 1) : page;
   const start = currentPage * pageSize + 1;
   const end = serverSide
     ? currentPage * pageSize + data.length

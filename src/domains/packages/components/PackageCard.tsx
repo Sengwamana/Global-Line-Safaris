@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ArrowUpRight, Clock } from "lucide-react";
 import type { TourPackage } from "@/lib/content/types";
 import { displayPackagePrice } from "@/lib/utils";
+import { siteImages } from "@/lib/siteImages";
 
 export function PackageCard({ pkg }: { pkg: TourPackage }) {
   const price = displayPackagePrice(pkg.price);
@@ -10,16 +11,14 @@ export function PackageCard({ pkg }: { pkg: TourPackage }) {
   return (
     <Link href={`/tour-packages/${pkg.slug}`} className="safari-package">
       <div className="package-image">
-        {pkg.image && (
-          <Image
-            src={pkg.image}
-            alt={pkg.title}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1000px) 50vw, 33vw"
-            loading="lazy"
-            decoding="async"
-          />
-        )}
+        <Image
+          src={pkg.image || siteImages.servicesHero.src}
+          alt={pkg.title}
+          fill
+          sizes="(max-width: 800px) 100vw, (max-width: 1100px) 50vw, 33vw"
+          loading="lazy"
+          decoding="async"
+        />
         {pkg.duration && (
           <span className="package-duration">
             <Clock width={12} height={12} />

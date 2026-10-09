@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import type { Destination } from "@/lib/content/types";
+import { siteImages } from "@/lib/siteImages";
 
 export function DestinationCard({
   destination,
@@ -15,20 +16,18 @@ export function DestinationCard({
       href={`/destinations/${destination.slug}`}
       className={`destination-card ${featured ? "destination-large" : ""}`}
     >
-      {destination.image && (
-        <Image
-          src={destination.image}
-          alt={destination.name}
-          fill
+      <Image
+        src={destination.image || siteImages.servicesHero.src}
+        alt={destination.name}
+        fill
           sizes={
             featured
-              ? "(max-width: 800px) 100vw, 60vw"
-              : "(max-width: 640px) 100vw, 40vw"
+              ? "(max-width: 640px) 100vw, (max-width: 1100px) 100vw, 50vw"
+              : "(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 25vw"
           }
-          loading="lazy"
-          decoding="async"
-        />
-      )}
+        loading="lazy"
+        decoding="async"
+      />
       <div className="destination-shade" />
       <div className="destination-copy">
         <div className="safari-eyebrow">

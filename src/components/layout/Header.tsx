@@ -17,7 +17,10 @@ import { siteConfig } from "@/lib/site";
 
 /** Width at which the CSS swaps the link bar for the mobile sheet. Keep in step
  *  with the media queries in src/styles/safari.css. */
-const DESKTOP_BREAKPOINT = "(min-width: 1240px)";
+// The full navigation has nine labels plus a booking CTA. At typical laptop
+// widths it cannot remain legible without overlapping, so use the menu sheet
+// until there is enough room for every item.
+const DESKTOP_BREAKPOINT = "(min-width: 1480px)";
 const SCROLL_THRESHOLD = 24;
 
 const subscribeToScroll = (onChange: () => void) => {

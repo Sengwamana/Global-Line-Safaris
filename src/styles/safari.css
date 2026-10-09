@@ -1211,7 +1211,11 @@ a.safari-topbar-item:hover,
 .destination-editorial-grid {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
-  grid-template-rows: auto auto;
+  /* Tiles contain absolutely positioned images and copy, so `auto` rows have
+     no in-flow content from which to establish a height. Explicit tracks keep
+     the mosaic stable before images decode and prevent the desktop grid from
+     collapsing into a thin strip. */
+  grid-template-rows: clamp(260px, 24vw, 390px) clamp(260px, 24vw, 390px);
   gap: 1rem;
 }
 
@@ -1695,10 +1699,15 @@ a.safari-topbar-item:hover,
   justify-content: center;
   width: 40px;
   height: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.32);
   border-radius: 50%;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.9);
   transition: all 0.3s;
+}
+
+.footer-social svg {
+  display: block;
+  stroke-width: 2.25;
 }
 
 .footer-social a:hover {
@@ -2209,7 +2218,7 @@ body:has(.safari-header) main .it-container.max-w-3xl {
    --------------------------------------------------------------------------- */
 /* Keep DESKTOP_BREAKPOINT in src/components/layout/Header.tsx in step with the
    width below: it is what closes the sheet when the window grows past it. */
-@media (min-width: 1240px) {
+@media (min-width: 1480px) {
   .mobile-nav-overlay {
     display: none;
   }
@@ -2220,7 +2229,7 @@ body:has(.safari-header) main .it-container.max-w-3xl {
    the sheet. From here to 1600px the phone number and the tagline are the
    optional pieces: both are repeated in the contact strip above and in the
    sheet, so dropping them costs nothing. */
-@media (min-width: 1240px) and (max-width: 1599px) {
+@media (min-width: 1480px) and (max-width: 1699px) {
   .nav-phone,
   .safari-brand-tagline {
     display: none;
@@ -2242,9 +2251,16 @@ body:has(.safari-header) main .it-container.max-w-3xl {
   }
 }
 
-@media (max-width: 1239px) {
+@media (max-width: 1479px) {
   .desktop-nav,
   .nav-phone {
+    display: none;
+  }
+
+  /* Keep the contact strip from wrapping at common laptop widths. The full
+     contact and social set remains available in the menu and footer. */
+  .safari-topbar-hours,
+  .safari-topbar-socials {
     display: none;
   }
 
