@@ -223,7 +223,7 @@ export default function AdminSettingsPage() {
 
   if (loadError) {
     return (
-      <AdminPageShell title="Website Settings" subtitle="Manage firm contact details, business hours, WhatsApp integration, and global configurations">
+      <AdminPageShell title="Basic Information" subtitle="Manage your business identity, contact details, social links, logos, and global website content">
         <div className="rounded-2xl border border-slate-200 bg-white dark:bg-slate-900 dark:border-slate-700/50 px-6 py-10 text-center">
           <AlertTriangle className="size-7 text-red-400 mx-auto mb-3" />
           <p className="text-sm text-slate-500">{loadError}</p>
@@ -237,8 +237,8 @@ export default function AdminSettingsPage() {
 
   return (
     <AdminPageShell
-      title="Website Settings"
-      subtitle="Manage firm contact details, business hours, WhatsApp integration, and global configurations"
+      title="Basic Information"
+      subtitle="Manage your business identity, contact details, social links, logos, and global website content"
       loading={loading}
       actions={
         <Button

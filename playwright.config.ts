@@ -1,4 +1,12 @@
 import { defineConfig, devices } from "@playwright/test"
+import { existsSync } from "node:fs"
+
+// Use the system Chrome when Playwright's bundled Chromium is not installed
+// (some platforms cannot download it). Falls back to the bundled browser on CI.
+const systemChrome = "/usr/bin/google-chrome"
+const launchOptions = existsSync(systemChrome)
+  ? { executablePath: systemChrome, args: ["--no-sandbox", "--disable-dev-shm-usage"] }
+  : undefined
 
 export default defineConfig({
   testDir: "./src/__tests__/e2e",
@@ -14,7 +22,7 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: { ...devices["Desktop Chrome"], launchOptions },
     },
   ],
   webServer: {

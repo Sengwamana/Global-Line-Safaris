@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Instagram, Facebook, Linkedin, Twitter } from "lucide-react";
 import { getSiteSettings } from "@/lib/content/service.server";
 import { NewsletterForm } from "@/components/layout/NewsletterForm";
+import { siteConfig } from "@/lib/site";
 
 function externalHref(value: string) {
   const href = value.trim();
@@ -19,11 +20,16 @@ const socialIcons: Record<string, React.ElementType> = {
 
 export async function Footer() {
   const settings = await getSiteSettings();
-  const socials = [
-    { label: "Instagram", href: externalHref(settings.instagram) },
-    { label: "Facebook", href: externalHref(settings.facebook) },
-    { label: "LinkedIn", href: externalHref(settings.linkedin) },
-  ].filter((social): social is { label: string; href: string } => Boolean(social.href));
+  // A newly-installed CMS may not have social values yet. Keep verified
+  // defaults visible until an editor replaces them in Basic Information.
+  const configuredSocials = {
+    Instagram: externalHref(settings.instagram),
+    Facebook: externalHref(settings.facebook),
+    LinkedIn: externalHref(settings.linkedin),
+  };
+  const socials = siteConfig.socialLinks
+    .filter((social) => social.label !== "X (Twitter)")
+    .map((social) => ({ label: social.label, href: configuredSocials[social.label as keyof typeof configuredSocials] || social.href }));
 
   return (
     <footer className="safari-footer">

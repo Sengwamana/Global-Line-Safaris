@@ -42,6 +42,7 @@ const navGroups = [
     label: "Leads",
     items: [
       { label: "Inquiries", href: "/admin/inquiries", icon: MessageSquare },
+      { label: "All Inquiries", href: "/admin/all-inquiries", icon: MessageSquare },
       { label: "Trip Inquiries", href: "/admin/trip-inquiries", icon: Navigation },
       { label: "Internships", href: "/admin/internship-inquiries", icon: GraduationCap },
       { label: "Subscribers", href: "/admin/subscribers", icon: Mail },
@@ -65,7 +66,8 @@ const navGroups = [
       { label: "Homepage", href: "/admin/homepage", icon: Globe },
       { label: "Media", href: "/admin/media", icon: Image },
       { label: "SEO", href: "/admin/seo", icon: Search },
-      { label: "Settings", href: "/admin/settings", icon: Settings },
+      { label: "Basic Information", href: "/admin/settings", icon: Settings },
+      { label: "Site Images", href: "/admin/site-images", icon: Image },
     ],
   },
   {

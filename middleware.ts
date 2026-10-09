@@ -31,7 +31,7 @@ function buildCsp(nonce: string): string {
   const scriptSrc = isProd
     ? `'self' 'nonce-${nonce}'`
     : `'self' 'unsafe-inline' 'unsafe-eval'`;
-  const styleSrc = isProd ? `'self' 'nonce-${nonce}'` : `'self' 'unsafe-inline'`;
+  const styleSrc = isProd ? `'self' 'unsafe-inline'` : `'self' 'unsafe-inline'`;
 
   // Analytics (GA4) is opt-in only: when a measurement id is configured at build
   // time the CSP is widened for Google's script/collect hosts; otherwise the
