@@ -10,7 +10,9 @@ export async function GET(_request: Request, { params }: { params: Promise<{ sec
 
   const { sectionKey } = await params;
   const section = await prisma.homepageSection.findUnique({ where: { sectionKey } });
-  if (!section) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!section) {
+    return NextResponse.json({ sectionKey, eyebrow: null, title: null, subtitle: null, description: null, items: [], imageKey: null, ctaLabel: null, ctaUrl: null });
+  }
   return NextResponse.json(section);
 }
 

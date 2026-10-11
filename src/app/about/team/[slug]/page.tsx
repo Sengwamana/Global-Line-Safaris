@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Mail, Linkedin } from "lucide-react";
 import { getTeam, getSeoSetting } from "@/lib/content/service.server";
 import { CTASection } from "@/domains/home/components/CTASection";
 import { siteConfig } from "@/lib/site";
+import { JsonLd } from "@/components/shared/JsonLd";
 
 export const revalidate = 60;
 
@@ -81,10 +82,7 @@ export default async function TeamMemberPage({ params }: TeamMemberPageProps) {
 
   return (
     <div className="overflow-x-hidden">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
+      <JsonLd data={structuredData} />
 
       {/* Hero */}
       <section className="safari-page-hero page-hero-min-height-50">

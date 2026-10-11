@@ -18,11 +18,20 @@ const iconMap: Record<string, React.ElementType> = {
   BedDouble,
 };
 
+const categoryCtas: Record<string, { label: string; href: string }> = {
+  "tours-and-experiences": { label: "Explore Tour Packages", href: "/tour-packages" },
+  "travel-services": { label: "Plan Your Trip", href: "/plan-your-trip" },
+  "step-on-guide-services": { label: "Request a Guide", href: "/contact" },
+  "training-attachments": { label: "Apply for Training", href: "/training" },
+};
+
 interface ServiceListProps {
   category: ServiceCategory;
 }
 
 export function ServiceList({ category }: ServiceListProps) {
+  const cta = categoryCtas[category.slug] ?? { label: "Contact Us", href: "/contact" };
+
   return (
     <section className="py-20 sm:py-28 bg-white dark:bg-slate-950">
       <div className="it-container px-4 sm:px-6 lg:px-8">
@@ -64,9 +73,9 @@ export function ServiceList({ category }: ServiceListProps) {
 
         {/* Contextual CTA */}
         <div className="mt-14 text-center">
-          <Link href="/contact">
+          <Link href={cta.href}>
             <Button variant="accent" size="xl" className="gap-2.5 rounded-xl shadow-xl shadow-accent/20">
-              {category.cta} <ArrowRight className="size-4" />
+              {cta.label} <ArrowRight className="size-4" />
             </Button>
           </Link>
           <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">

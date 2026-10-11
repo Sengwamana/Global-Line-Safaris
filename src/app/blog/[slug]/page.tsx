@@ -8,6 +8,7 @@ import { BlogCard } from "@/domains/blog/components/BlogCard";
 import { getBlogPost, getBlogPosts } from "@/lib/content/service.server";
 import { siteConfig } from "@/lib/site";
 import { formatDate } from "@/lib/utils";
+import { JsonLd } from "@/components/shared/JsonLd";
 
 export const revalidate = 60;
 
@@ -112,14 +113,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <div className="overflow-x-hidden">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }}
-      />
+      <JsonLd data={structuredData} />
+      <JsonLd data={breadcrumbData} />
       <PageHero
         eyebrow={post.category || "Travel Journal"}
         title={post.title}

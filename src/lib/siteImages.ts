@@ -30,6 +30,7 @@ export interface SiteImages {
   about: SiteImage;
   advisory: SiteImage;
   servicesHero: SiteImage;
+  trainingHero: SiteImage;
   smallBusiness: SiteImage;
   personalTaxes: SiteImage;
   outsourcing: SiteImage;
@@ -84,6 +85,10 @@ export const siteImages: SiteImages = {
   servicesHero: {
     src: "/images/nyungwe-forest-park.jpg",
     alt: "Old-growth rainforest canopy of Nyungwe National Park, Rwanda",
+  },
+  trainingHero: {
+    src: "/gls/gallery/gallery_1787761154_6d06c549.jpg",
+    alt: "Students participating in tourism training at Global Line Safaris",
   },
 
   // Service category images

@@ -21,6 +21,7 @@ import {
 import { displayPackagePrice } from "@/lib/utils";
 import { siteImages } from "@/lib/siteImages";
 import { siteConfig } from "@/lib/site";
+import { JsonLd } from "@/components/shared/JsonLd";
 
 export const revalidate = 60;
 
@@ -106,10 +107,7 @@ export default async function TourPackageDetailPage({ params }: PackagePageProps
 
   return (
     <div className="overflow-x-hidden">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
+      <JsonLd data={structuredData} />
       <PageHero
         eyebrow="Tour Package"
         title={pkg.title}

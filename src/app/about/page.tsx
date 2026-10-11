@@ -8,6 +8,7 @@ import { TeamGrid } from "@/domains/about/components/TeamGrid";
 import { CompanyTimeline } from "@/domains/about/components/CompanyTimeline";
 import { CompanyValues } from "@/domains/about/components/CompanyValues";
 import { CTASection } from "@/domains/home/components/CTASection";
+import { JsonLd } from "@/components/shared/JsonLd";
 
 export const revalidate = 60;
 
@@ -40,10 +41,7 @@ export default async function AboutPage() {
 
   return (
     <div className="overflow-x-hidden">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
+      <JsonLd data={structuredData} />
       <AboutHero />
       <FounderProfile founder={team.founder} />
       <CompanyTimeline />

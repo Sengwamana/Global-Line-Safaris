@@ -22,8 +22,9 @@
     "designerCredit": "Ice Tech Rwanda",
     "adminEmail": "info@globallinesafaris.rw",
     "linkedin": "https://linkedin.com/in/global-line-safaris-0367a123a",
-    "facebook": "https://facebook.com/globallinesafaris",
-    "instagram": "https://instagram.com/globallinesafaris1",
+    "facebook": "https://www.facebook.com/profile.php?id=61589605701096",
+    "instagram": "https://www.instagram.com/globallinesafaris1",
+    "tiktok": "https://tiktok.com/@globallinesafaris.rw",
     "youtube": ""
   },
   "serviceCategories": [
@@ -186,7 +187,7 @@
       "title": "Training & Attachments",
       "description": "Global Line Safaris combines tourism services with professional skills development, offering accredited tourism short courses and hands-on industry placements for students and practitioners.",
       "icon": "GraduationCap",
-      "image": "/gls/gallery/gallery_1787759216_3cf27fb4.jpg",
+      "image": "/gls/gallery/gallery_1787761154_6d06c549.jpg",
       "cta": "Enquire About Training",
       "displayOrder": 3,
       "services": [
@@ -657,8 +658,8 @@
     },
     {
       "key": "category.training-attachments",
-      "url": "/images/kingfisher-kayaking.jpg",
-      "alt": "Kingfisher kayaking on the calm waters of Rwanda"
+      "url": "/gls/gallery/gallery_1787761154_6d06c549.jpg",
+      "alt": "Students participating in tourism training at Global Line Safaris"
     }
   ]
 }

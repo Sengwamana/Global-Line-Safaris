@@ -1,6 +1,3 @@
-// Global Line Safaris — CMS, inquiry management & website administration schema
-// PostgreSQL via Prisma.
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,36 +7,6 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
-
-// ===========================================================================
-// Enums
-// ===========================================================================
-
-enum Role {
-  SUPER_ADMIN
-  ADMIN
-  EDITOR
-}
-
-enum ContentStatus {
-  PUBLISHED
-  DRAFT
-  ARCHIVED
-}
-
-enum InquiryStatus {
-  NEW
-  CONTACTED
-  IN_PROGRESS
-  QUALIFIED
-  CONVERTED
-  CLOSED
-  SPAM
-}
-
-// ===========================================================================
-// Authentication
-// ===========================================================================
 
 model Account {
   id                String  @id @default(cuid())
@@ -54,8 +21,7 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@index([userId])
@@ -72,30 +38,29 @@ model Session {
 }
 
 model User {
-  id               String    @id @default(cuid())
-  name             String?
-  email            String    @unique
-  emailVerified    DateTime?
-  image            String?
-  password         String?
-  role             Role      @default(EDITOR)
-  active           Boolean   @default(true)
-  phone            String?
-  bio              String?
-  twoFactorEnabled Boolean   @default(false)
-  twoFactorSecret  String?
-  lastLoginAt      DateTime?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-
+  id                          String              @id @default(cuid())
+  name                        String?
+  email                       String              @unique
+  emailVerified               DateTime?
+  image                       String?
+  password                    String?
+  role                        Role                @default(EDITOR)
+  active                      Boolean             @default(true)
+  phone                       String?
+  bio                         String?
+  twoFactorEnabled            Boolean             @default(false)
+  twoFactorSecret             String?
+  lastLoginAt                 DateTime?
+  createdAt                   DateTime            @default(now())
+  updatedAt                   DateTime            @updatedAt
   accounts                    Account[]
-  sessions                    Session[]
-  uploadedMedia               Media[]             @relation("MediaUploader")
-  assignedInquiries           Inquiry[]           @relation("InquiryAssignee")
-  assignedTripInquiries       TripInquiry[]       @relation("TripInquiryAssignee")
-  assignedInternshipInquiries InternshipInquiry[] @relation("InternshipInquiryAssignee")
-  notes                       Note[]              @relation("NoteAuthor")
   auditLogs                   AuditLog[]
+  assignedInquiries           Inquiry[]           @relation("InquiryAssignee")
+  assignedInternshipInquiries InternshipInquiry[] @relation("InternshipInquiryAssignee")
+  uploadedMedia               Media[]             @relation("MediaUploader")
+  notes                       Note[]              @relation("NoteAuthor")
+  sessions                    Session[]
+  assignedTripInquiries       TripInquiry[]       @relation("TripInquiryAssignee")
 }
 
 model VerificationToken {
@@ -105,10 +70,6 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
-
-// ===========================================================================
-// Media library
-// ===========================================================================
 
 model Media {
   id           String   @id @default(cuid())
@@ -124,17 +85,12 @@ model Media {
   uploadedById String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-
-  uploader User? @relation("MediaUploader", fields: [uploadedById], references: [id], onDelete: SetNull)
+  uploader     User?    @relation("MediaUploader", fields: [uploadedById], references: [id])
 
   @@index([uploadedById])
   @@index([mimeType])
   @@index([createdAt])
 }
-
-// ===========================================================================
-// Content
-// ===========================================================================
 
 model ServiceCategory {
   id             String        @id @default(cuid())
@@ -150,34 +106,32 @@ model ServiceCategory {
   status         ContentStatus @default(PUBLISHED)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
-
-  services Service[]
+  services       Service[]
 
   @@index([status])
   @@index([displayOrder])
 }
 
 model Service {
-  id               String        @id @default(cuid())
+  id               String           @id @default(cuid())
   categoryId       String
   name             String
   slug             String
   description      String
   shortDescription String?
-  icon             String        @default("Briefcase")
+  icon             String           @default("Briefcase")
   image            String?
-  ctaLabel         String        @default("Request a Consultation")
-  ctaUrl           String        @default("/contact")
+  ctaLabel         String           @default("Request a Consultation")
+  ctaUrl           String           @default("/contact")
   seoTitle         String?
   seoDescription   String?
-  featured         Boolean       @default(false)
-  displayOrder     Int           @default(0)
-  status           ContentStatus @default(PUBLISHED)
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
-
-  category ServiceCategory  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  benefits ServiceBenefit[]
+  featured         Boolean          @default(false)
+  displayOrder     Int              @default(0)
+  status           ContentStatus    @default(PUBLISHED)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  category         ServiceCategory  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  benefits         ServiceBenefit[]
 
   @@unique([categoryId, slug])
   @@index([categoryId])
@@ -186,12 +140,11 @@ model Service {
 }
 
 model ServiceBenefit {
-  id           String @id @default(cuid())
+  id           String  @id @default(cuid())
   serviceId    String
   text         String
-  displayOrder Int    @default(0)
-
-  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  displayOrder Int     @default(0)
+  service      Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
   @@index([serviceId])
 }
@@ -247,27 +200,23 @@ model FaqItem {
   @@index([displayOrder])
 }
 
-// ===========================================================================
-// Tourism content: destinations & tour packages
-// ===========================================================================
-
 model Destination {
   id               String        @id @default(cuid())
   name             String
   slug             String        @unique
   shortDescription String?
   description      String        @default("")
-  location         String?
-  category         String?
   image            String?
-  galleryImages    String? // JSON array of image paths
-  seoTitle         String?
-  seoDescription   String?
+  galleryImages    String?
   displayOrder     Int           @default(0)
   featured         Boolean       @default(false)
   status           ContentStatus @default(PUBLISHED)
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
+  category         String?
+  location         String?
+  seoDescription   String?
+  seoTitle         String?
 
   @@index([status])
   @@index([featured])
@@ -279,26 +228,26 @@ model TourPackage {
   title          String
   slug           String        @unique
   location       String?
-  category       String?
   duration       String?
-  price          String? // e.g. "$30,000.00" — blank means "price on request"
+  price          String?
   priceNote      String?
   overview       String        @default("")
   facts          String?
-  highlights     String? // JSON array of strings
-  itinerary      String? // JSON array of { heading, body }
-  inclusions     String? // JSON array of strings
-  exclusions     String? // JSON array of strings
+  highlights     String?
+  itinerary      String?
+  inclusions     String?
+  exclusions     String?
   note           String?
   image          String?
-  galleryImages  String? // JSON array of image paths
-  seoTitle       String?
-  seoDescription String?
+  galleryImages  String?
   featured       Boolean       @default(false)
   displayOrder   Int           @default(0)
   status         ContentStatus @default(PUBLISHED)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
+  category       String?
+  seoDescription String?
+  seoTitle       String?
 
   @@index([status])
   @@index([featured])
@@ -334,7 +283,6 @@ model TripInquiry {
   name             String
   email            String
   phone            String?
-  country          String?
   travelDate       String?
   duration         String?
   travelers        String?
@@ -348,8 +296,8 @@ model TripInquiry {
   assignedToId     String?
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
-
-  assignedTo User? @relation("TripInquiryAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+  country          String?
+  assignedTo       User?         @relation("TripInquiryAssignee", fields: [assignedToId], references: [id])
 
   @@index([email])
   @@index([status])
@@ -363,13 +311,11 @@ model InternshipInquiry {
   name               String
   email              String
   phone              String?
-  country            String?
   university         String?
   fieldOfStudy       String?
   programType        String?
   preferredStartDate String?
   duration           String?
-  experience         String?
   areasOfInterest    String?
   message            String?
   status             InquiryStatus @default(NEW)
@@ -378,8 +324,9 @@ model InternshipInquiry {
   assignedToId       String?
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
-
-  assignedTo User? @relation("InternshipInquiryAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+  country            String?
+  experience         String?
+  assignedTo         User?         @relation("InternshipInquiryAssignee", fields: [assignedToId], references: [id])
 
   @@index([email])
   @@index([status])
@@ -388,10 +335,6 @@ model InternshipInquiry {
   @@index([assignedToId])
 }
 
-// ===========================================================================
-// Homepage content & site images
-// ===========================================================================
-
 model HomepageSection {
   id          String   @id @default(cuid())
   sectionKey  String   @unique
@@ -399,8 +342,8 @@ model HomepageSection {
   title       String?
   subtitle    String?
   description String?
-  items       String? // JSON array of { icon, title, description, ... } when applicable
-  imageKey    String? // reference to a SiteImage key, e.g. "about", "advisory"
+  items       String?
+  imageKey    String?
   ctaLabel    String?
   ctaUrl      String?
   createdAt   DateTime @default(now())
@@ -417,10 +360,6 @@ model SiteImage {
   createdAt DateTime @default(now())
 }
 
-// ===========================================================================
-// SEO
-// ===========================================================================
-
 model SeoSetting {
   id           String   @id @default(cuid())
   pageKey      String   @unique
@@ -433,20 +372,12 @@ model SeoSetting {
   updatedAt    DateTime @updatedAt
 }
 
-// ===========================================================================
-// Key-value settings
-// ===========================================================================
-
 model Setting {
   id        String   @id @default(cuid())
   key       String   @unique
   value     String
   updatedAt DateTime @updatedAt
 }
-
-// ===========================================================================
-// Leads
-// ===========================================================================
 
 model Inquiry {
   id           String        @id @default(cuid())
@@ -463,8 +394,7 @@ model Inquiry {
   assignedToId String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-
-  assignedTo User? @relation("InquiryAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+  assignedTo   User?         @relation("InquiryAssignee", fields: [assignedToId], references: [id])
 
   @@index([email])
   @@index([status])
@@ -480,8 +410,7 @@ model Note {
   authorId   String?
   body       String
   createdAt  DateTime @default(now())
-
-  author User? @relation("NoteAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  author     User?    @relation("NoteAuthor", fields: [authorId], references: [id])
 
   @@index([targetType, targetId])
   @@index([authorId])
@@ -493,10 +422,6 @@ model NewsletterSubscriber {
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
 }
-
-// ===========================================================================
-// Notifications & audit
-// ===========================================================================
 
 model Notification {
   id        String   @id @default(cuid())
@@ -520,10 +445,31 @@ model AuditLog {
   details   String?
   ip        String?
   createdAt DateTime @default(now())
-
-  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user      User?    @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([entity])
   @@index([createdAt])
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
+}
+
+enum ContentStatus {
+  PUBLISHED
+  DRAFT
+  ARCHIVED
+}
+
+enum InquiryStatus {
+  NEW
+  CONTACTED
+  IN_PROGRESS
+  QUALIFIED
+  CONVERTED
+  CLOSED
+  SPAM
 }

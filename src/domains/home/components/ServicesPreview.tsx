@@ -1,4 +1,4 @@
-import { ServiceCard } from "@/domains/services/components/ServiceCard";
+import { ServicePreviewCard } from "@/domains/home/components/ServicePreviewCard";
 import type { ServiceCategory, HomepageSectionData } from "@/lib/content/types";
 
 export function ServicesPreviewSection({
@@ -25,7 +25,7 @@ export function ServicesPreviewSection({
         </div>
         <div className="experience-grid">
           {categories.map((category) => (
-            <ServiceCard key={category.slug} category={category} />
+            <ServicePreviewCard key={category.slug} category={category} />
           ))}
         </div>
       </div>

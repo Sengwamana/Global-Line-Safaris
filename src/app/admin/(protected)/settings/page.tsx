@@ -140,6 +140,7 @@ const SETTING_GROUPS: SettingGroup[] = [
       { key: "linkedin", label: "LinkedIn Company URL", placeholder: "https://linkedin.com/company/..." },
       { key: "facebook", label: "Facebook Page URL", placeholder: "https://facebook.com/..." },
       { key: "instagram", label: "Instagram Profile URL", placeholder: "https://instagram.com/..." },
+      { key: "tiktok", label: "TikTok Profile URL", placeholder: "https://tiktok.com/@..." },
       { key: "youtube", label: "YouTube Channel URL", placeholder: "https://youtube.com/..." },
     ],
   },

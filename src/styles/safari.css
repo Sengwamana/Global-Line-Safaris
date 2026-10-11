@@ -966,7 +966,6 @@ a.safari-topbar-item:hover,
 .safari-section p:not(.safari-eyebrow) {
   line-height: 1.8;
   font-size: 0.95rem;
-  color: #4a4a45;
 }
 
 /* Body copy on the green sections needs a light tone to stay readable. */
@@ -974,7 +973,6 @@ a.safari-topbar-item:hover,
 .safari-cta p:not(.safari-eyebrow) {
   line-height: 1.8;
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.78);
 }
 
 /* ---------------------------------------------------------------------------
@@ -1144,6 +1142,8 @@ a.safari-topbar-item:hover,
   object-fit: contain;
   max-width: 100%;
   max-height: 100%;
+  width: auto;
+  height: auto;
   transition: transform 0.3s ease;
 }
 
@@ -1634,8 +1634,8 @@ a.safari-topbar-item:hover,
    FOOTER
    --------------------------------------------------------------------------- */
 .safari-footer {
-  background: var(--brand);
-  color: rgba(255, 255, 255, 0.7);
+  background: var(--accent);
+  color: var(--brand);
   padding: 80px 0 2rem;
 }
 
@@ -1644,7 +1644,7 @@ a.safari-topbar-item:hover,
   grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: 4rem;
   padding-bottom: 4rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(15, 35, 24, 0.14);
   margin-bottom: 2.5rem;
 }
 
@@ -1681,9 +1681,9 @@ a.safari-topbar-item:hover,
 .footer-brand p {
   max-width: 300px;
   font-size: 0.85rem;
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.8;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(15, 35, 24, 0.85);
   margin-top: 1.2rem;
 }
 
@@ -1699,9 +1699,9 @@ a.safari-topbar-item:hover,
   justify-content: center;
   width: 40px;
   height: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.32);
+  border: 1px solid rgba(15, 35, 24, 0.4);
   border-radius: 50%;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--brand);
   transition: all 0.3s;
 }
 
@@ -1711,13 +1711,13 @@ a.safari-topbar-item:hover,
 }
 
 .footer-social a:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: rgba(201, 168, 76, 0.08);
+  border-color: var(--brand);
+  color: var(--brand);
+  background: rgba(15, 35, 24, 0.08);
 }
 
 .safari-footer h3 {
-  color: var(--accent);
+  color: var(--brand);
   font-family: var(--font-inter), sans-serif;
   font-size: 0.62rem;
   font-weight: 700;
@@ -1736,13 +1736,13 @@ a.safari-topbar-item:hover,
 }
 
 .safari-footer a {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(15, 35, 24, 0.85);
   text-decoration: none;
   transition: color 0.3s;
 }
 
 .safari-footer a:hover {
-  color: var(--accent-soft);
+  color: var(--brand);
 }
 
 .footer-contact {
@@ -1753,13 +1753,13 @@ a.safari-topbar-item:hover,
 }
 
 .footer-contact a {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(15, 35, 24, 0.85);
   text-decoration: none;
   transition: color 0.3s;
 }
 
 .footer-contact a:hover {
-  color: var(--accent-soft);
+  color: var(--brand);
 }
 
 .footer-newsletter {
@@ -1768,7 +1768,7 @@ a.safari-topbar-item:hover,
 
 .footer-newsletter p,
 .footer-newsletter h3 {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(15, 35, 24, 0.85);
 }
 
 .footer-newsletter input {
@@ -1782,9 +1782,9 @@ a.safari-topbar-item:hover,
   justify-content: space-between;
   gap: 20px;
   flex-wrap: wrap;
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(15, 35, 24, 0.75);
   font-size: 0.72rem;
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .footer-bottom > div {
@@ -1793,13 +1793,31 @@ a.safari-topbar-item:hover,
 }
 
 .footer-bottom a {
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(15, 35, 24, 0.75);
   text-decoration: none;
   transition: color 0.3s;
 }
 
 .footer-bottom a:hover {
-  color: var(--accent-soft);
+  color: var(--brand);
+}
+
+.footer-credit {
+  margin-top: 12px;
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: rgba(15, 35, 24, 0.6);
+}
+
+.footer-credit a {
+  color: var(--brand);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer-credit a:hover {
+  color: var(--accent);
 }
 
 /* ---------------------------------------------------------------------------
@@ -1978,12 +1996,20 @@ a.safari-topbar-item:hover,
   background: #f0ebe0;
 }
 
+.dark .section-bg-cream {
+  background: #1a2e22;
+}
+
 .section-bg-brand {
   background: var(--brand);
 }
 
 .section-bg-ivory {
   background: #faf7f0;
+}
+
+.dark .section-bg-ivory {
+  background: #152519;
 }
 
 .section-bg-dark {
@@ -2142,20 +2168,20 @@ body:has(.safari-header) main [class*="bg-brand-bg-light"] {
   background-color: #faf7f0;
 }
 
-body:has(.safari-header) main [class*="bg-white"] {
+body:has(.safari-header) main .bg-white:not([class*="bg-white/"]) {
   background-color: var(--white);
 }
 
 /* Only apply dark text on light backgrounds - let dark sections keep their own text colors */
-body:has(.safari-header) main [class*="bg-white"] [class*="text-slate-9"],
+body:has(.safari-header) main .bg-white:not([class*="bg-white/"]) [class*="text-slate-9"],
 body:has(.safari-header) main [class*="bg-brand-bg-light"] [class*="text-slate-9"],
 body:has(.safari-header) main [class*="bg-slate-50"] [class*="text-slate-9"] {
   color: #1a1a18;
 }
 
-body:has(.safari-header) main [class*="bg-white"] [class*="text-slate-5"],
-body:has(.safari-header) main [class*="bg-white"] [class*="text-slate-4"],
-body:has(.safari-header) main [class*="bg-white"] [class*="text-slate-6"],
+body:has(.safari-header) main .bg-white:not([class*="bg-white/"]) [class*="text-slate-5"],
+body:has(.safari-header) main .bg-white:not([class*="bg-white/"]) [class*="text-slate-4"],
+body:has(.safari-header) main .bg-white:not([class*="bg-white/"]) [class*="text-slate-6"],
 body:has(.safari-header) main [class*="bg-brand-bg-light"] [class*="text-slate-5"],
 body:has(.safari-header) main [class*="bg-brand-bg-light"] [class*="text-slate-4"],
 body:has(.safari-header) main [class*="bg-brand-bg-light"] [class*="text-slate-6"],

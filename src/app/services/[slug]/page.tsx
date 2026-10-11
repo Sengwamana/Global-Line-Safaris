@@ -3,6 +3,7 @@ import { getServiceCategories, getServiceCategory } from "@/lib/content/service.
 import { ServiceDetailHero } from "@/domains/services/components/ServiceDetailHero";
 import { ServiceList } from "@/domains/services/components/ServiceList";
 import { CTASection } from "@/domains/home/components/CTASection";
+import { JsonLd } from "@/components/shared/JsonLd";
 import { siteConfig } from "@/lib/site";
 
 export const revalidate = 60;
@@ -72,14 +73,8 @@ export default async function ServicePage({ params }: ServicePageProps) {
 
   return (
     <div className="overflow-x-hidden">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemList) }}
-      />
+      <JsonLd data={structuredData} />
+      <JsonLd data={itemList} />
       <ServiceDetailHero category={category} />
       <ServiceList category={category} />
       <CTASection />

@@ -35,4 +35,5 @@ declare module "lucide-react" {
   export const Bell: LucideIcon;
   export const ShieldCheck: LucideIcon;
   export const Lock: LucideIcon;
+  export const Music2Icon: LucideIcon;
 }
