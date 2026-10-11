@@ -363,6 +363,7 @@ async function loadSiteSettings(): Promise<SiteSettings> {
     linkedin: get("linkedin", "#"),
     facebook: get("facebook", "#"),
     instagram: get("instagram", "#"),
+    tiktok: get("tiktok", "#"),
     youtube: get("youtube", "#"),
     bookingUrl: get("bookingUrl", siteConfig.bookOnlineUrl),
     whatsappNumber: get("whatsappNumber", siteConfig.whatsappNumber),

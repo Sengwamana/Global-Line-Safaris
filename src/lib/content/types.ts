@@ -100,6 +100,7 @@ export interface SiteSettings {
   linkedin: string;
   facebook: string;
   instagram: string;
+  tiktok: string;
   youtube: string;
   bookingUrl: string;
   whatsappNumber: string;
