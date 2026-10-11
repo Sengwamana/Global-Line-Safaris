@@ -36,9 +36,10 @@
 .admin-auth-copyright { font-size:10px; color:#647060; }
 .admin-sidebar { background:#142f25; border-color:#ffffff15; color:#f6f2e9; }
 .admin-sidebar > div:first-child { height:88px; border-color:#ffffff20; }
-.admin-sidebar-brand { background:#f6f2e9; padding:7px; border-radius:3px; overflow:hidden; }
-.admin-sidebar-brand img { width:126px; max-width:100%; }
-.admin-sidebar.w-\[68px\] .admin-sidebar-brand { display:none; }
+.admin-sidebar-brand { background:#f6f2e9; padding:5px; border-radius:3px; overflow:hidden; }
+.admin-sidebar-brand img { width:80px; max-width:100%; }
+.admin-sidebar.w-\[68px\] .admin-sidebar-brand { display:flex; justify-content:center; padding:4px; }
+.admin-sidebar.w-\[68px\] .admin-sidebar-brand img { width:48px; }
 .admin-sidebar nav p { color:#c7a46a; font-size:9px; margin-bottom:8px; }
 .admin-sidebar nav a { color:#e1e8dc; border-radius:3px; min-height:42px; font-size:12px; }
 .admin-sidebar nav a:hover { background:#ffffff0d; color:#fff; }
