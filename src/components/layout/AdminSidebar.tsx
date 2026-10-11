@@ -117,7 +117,7 @@ export function AdminSidebar({ collapsed, onToggle, mobileOpen, onNavigate }: Ad
       )}
     >
       <div className="flex h-14 items-center justify-between border-b border-slate-100 px-3 dark:border-slate-800/50">
-        <div className="admin-sidebar-brand"><Logo href="/admin/dashboard" size="sm" showWordmark={false} /></div>
+        <div className="admin-sidebar-brand"><Logo href="/admin/dashboard" size="xs" showWordmark={false} /></div>
         <button
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           onClick={onToggle}

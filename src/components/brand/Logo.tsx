@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 interface LogoProps {
   className?: string;
   href?: string;
-  size?: "sm" | "md";
+  size?: "xs" | "sm" | "md";
   showWordmark?: boolean;
   /** Custom logo URL from the CMS. When provided, overrides the default logo. */
   src?: string;
@@ -21,13 +21,15 @@ const LOGO_INTRINSIC = { width: 1600, height: 659 } as const;
 const LOGO_RATIO = LOGO_INTRINSIC.width / LOGO_INTRINSIC.height;
 
 const sizeStyles = {
+  xs: { box: "h-6 w-6 rounded-md text-xs", title: "text-xs", subtitle: "text-[9px]" },
   sm: { box: "h-8 w-8 rounded-lg text-sm", title: "text-sm", subtitle: "text-[10px]" },
   md: { box: "h-9 w-9 rounded-lg text-base", title: "text-base", subtitle: "text-[11px]" },
 } as const;
 
 /** Width is the design intent; height is derived so the mark is never distorted. */
 const logoSizes = {
-  sm: { width: 120, height: Math.round(120 / LOGO_RATIO) },
+  xs: { width: 64, height: Math.round(64 / LOGO_RATIO) },
+  sm: { width: 100, height: Math.round(100 / LOGO_RATIO) },
   md: { width: 150, height: Math.round(150 / LOGO_RATIO) },
 } as const;
 
