@@ -33,7 +33,7 @@ export async function sendEmail(opts: EmailOptions) {
     ? [
         {
           filename: "booking.ics",
-          content: opts.calendar,
+          content: Buffer.from(opts.calendar).toString("base64"),
           contentType: "text/calendar; charset=utf-8; method=REQUEST",
         },
       ]
@@ -267,6 +267,73 @@ function escapeHtml(value: string): string {
     .replace(/"/g, "&quot;");
 }
 
+type EmailCardOptions = {
+  title?: string;
+  preheader?: string;
+  body?: string;
+  showLogo?: boolean;
+  footerExtras?: string[];
+  cta?: { label: string; href: string } | null;
+};
+
+const BRAND_PRIMARY = "#0A1F45";
+const BRAND_ACCENT = "#C7A46A";
+
+function emailCard(options: EmailCardOptions): string {
+  const { title, preheader, body, showLogo = true, footerExtras = [], cta = null } = options;
+  const logoSrc = `${siteConfig.siteUrl.replace(/\/$/, "")}/gls/logo.png`;
+  const bodyRows = body
+    ? body
+        .split(/\n\s*\n/)
+        .map((paragraph) => paragraph.trim())
+        .filter(Boolean)
+        .map(
+          (paragraph) =>
+            `<p style='margin:0 0 16px;font-size:14px;line-height:1.6;color:#475569;'>${escapeHtml(paragraph)}</p>`
+        )
+        .join("")
+    : "";
+
+  const ctaHtml = cta
+    ? `<div style='margin:24px 0 0;text-align:center;'><a href='${escapeHtml(
+        cta.href
+      )}' style='display:inline-block;padding:12px 24px;background:${BRAND_PRIMARY};color:#ffffff;text-decoration:none;border-radius:8px;font-size:14px;font-weight:600;'>${escapeHtml(
+        cta.label
+      )}</a></div>`
+    : "";
+
+  const footerRows = [
+    `<p style='margin:28px 0 0;font-size:13px;color:#94a3b8;border-top:1px solid #e2e8f0;padding-top:16px;'>Warm regards,<br/>The Global Line Safaris Team<br/><span style='color:#64748b;'>${escapeHtml(
+      siteConfig.phone
+    )} · ${escapeHtml(siteConfig.email)}</span></p>`,
+  ];
+  for (const extra of footerExtras) {
+    if (!extra) continue;
+    footerRows.push(
+      `<p style='margin:12px 0 0;font-size:12px;line-height:1.6;color:#94a3b8;'>${escapeHtml(extra)}</p>`
+    );
+  }
+
+  return [
+    "<div style='font-family:Arial,Helvetica,sans-serif;color:#1e293b;max-width:600px;margin:0 auto;background:#f8fafc;padding:16px;'>",
+    "<table role='presentation' width='100%' cellpadding='0' cellspacing='0' style='background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(15,23,42,0.08);border:1px solid #e2e8f0;'>",
+    showLogo
+      ? `<tr><td style='background:${BRAND_PRIMARY};padding:24px 32px;text-align:center;'><a href='${escapeHtml(
+          siteConfig.siteUrl
+        )}' style='text-decoration:none;'><img src='${escapeHtml(logoSrc)}' alt='Global Line Safaris' style='height:56px;max-width:100%;display:block;margin:0 auto;'></a><div style='color:${BRAND_ACCENT};font-size:14px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;margin-top:12px;'>Global Line Safaris</div><div style='color:#ffffff;font-size:12px;opacity:.85;padding-top:8px;'>Travel · Safaris · Rwanda &amp; East Africa</div></td></tr>`
+      : `<tr><td style='background:${BRAND_PRIMARY};padding:28px 32px;'><div style='color:${BRAND_ACCENT};font-size:22px;font-weight:bold;'>Global Line Safaris</div><div style='color:#ffffff;font-size:13px;opacity:.85;padding-top:4px;'>Travel · Safaris · Rwanda &amp; East Africa</div></td></tr>`,
+    "<tr><td style='padding:32px;background:#ffffff;'>",
+    preheader ? `<p style='margin:0 0 12px;font-size:12px;text-transform:uppercase;letter-spacing:0.16em;color:#94a3b8;'>${escapeHtml(preheader)}</p>` : "",
+    title ? `<h1 style='margin:0 0 16px;font-size:20px;line-height:1.3;color:#0f172a;'>${escapeHtml(title)}</h1>` : "",
+    bodyRows,
+    ctaHtml,
+    footerRows.join(""),
+    "</td></tr>",
+    "</table>",
+    "</div>",
+  ].join("");
+}
+
 /**
  * Build a bookable time (start) from a slot label and date.
  * Returns the start Date for ICS, or null if it can't be parsed.
@@ -323,33 +390,23 @@ function bookingHtml(data: BookingConfirmationData, isTentative: boolean): strin
     day: "numeric",
     year: "numeric",
   });
-  return [
-    "<div style='font-family:Arial,Helvetica,sans-serif;color:#1e293b;max-width:600px;margin:0 auto;'>",
-    "<table role='presentation' width='100%' cellpadding='0' cellspacing='0' style='background:#0A1F45;border-radius:12px 12px 0 0;padding:28px 32px;'>",
-    "<tr><td style='color:#C7A46A;font-size:22px;font-weight:bold;'>Global Line Safaris</td></tr>",
-    "<tr><td style='color:#ffffff;font-size:13px;opacity:.85;padding-top:4px;'>Travel · Safaris · Rwanda &amp; East Africa</td></tr>",
-    "</table>",
-    "<div style='border:1px solid #e2e8f0;border-top:none;border-radius:0 0 12px 12px;padding:32px;background:#ffffff;'>",
-    `<h2 style='margin:0 0 12px;font-size:18px;'>Booking ${isTentative ? "Request Received" : "Confirmed"} — ${escapeHtml(data.service)}</h2>`,
-    `<p style='margin:0 0 20px;font-size:14px;line-height:1.6;color:#475569;'>Hi ${escapeHtml(data.name)},</p>`,
-    `<p style='margin:0 0 24px;font-size:14px;line-height:1.6;color:#475569;'>`,
-    isTentative
-      ? "Thank you for requesting a consultation. We've reserved your preferred slot and will finalize it with you within one business day."
-      : "Great news — your consultation has been confirmed. We look forward to meeting you.",
-    "</p>",
-    "<table role='presentation' width='100%' cellpadding='0' cellspacing='0' style='background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:18px 22px;'>",
-    `<tr><td style='font-size:12px;color:#64748b;padding:4px 0;'>DATE</td></tr>`,
-    `<tr><td style='font-size:15px;font-weight:600;color:#0f172a;padding:0 0 14px;'>${escapeHtml(dateLabel)}</td></tr>`,
-    `<tr><td style='font-size:12px;color:#64748b;padding:4px 0;'>TIME</td></tr>`,
-    `<tr><td style='font-size:15px;font-weight:600;color:#0f172a;padding:0 0 14px;'>${escapeHtml(data.time)}</td></tr>`,
-    `<tr><td style='font-size:12px;color:#64748b;padding:4px 0;'>LOCATION</td></tr>`,
-    `<tr><td style='font-size:15px;font-weight:600;color:#0f172a;'>in-person or virtual — we'll confirm</td></tr>`,
-    "</table>",
-    "<p style='margin:24px 0 0;font-size:14px;line-height:1.6;color:#475569;'>If anything changes, just reply to this email or call us. See you soon!</p>",
-    `<p style='margin:28px 0 0;font-size:13px;color:#94a3b8;border-top:1px solid #e2e8f0;padding-top:16px;'>Warm regards,<br/>The Global Line Safaris Team<br/><span style='color:#64748b;'>${escapeHtml(siteConfig.phone)} · ${escapeHtml(siteConfig.email)}</span></p>`,
-    "</div>",
-    "</div>",
-  ].join("");
+  const intro = isTentative
+    ? "Thank you for requesting a consultation. We've reserved your preferred slot and will finalize it with you within one business day."
+    : "Great news — your consultation has been confirmed. We look forward to meeting you.";
+
+  const bodyParts = [
+    intro,
+    `DATE: ${dateLabel}`,
+    `TIME: ${data.time}`,
+    "LOCATION: in-person or virtual — we'll confirm",
+    "If anything changes, just reply to this email or call us. See you soon!",
+  ];
+
+  return emailCard({
+    title: `Booking ${isTentative ? "Request Received" : "Confirmed"} — ${data.service}`,
+    preheader: `Booking ${isTentative ? "request received" : "confirmed"}`,
+    body: bodyParts.join("\n\n"),
+  });
 }
 
 function bookingText(data: BookingConfirmationData, isTentative: boolean): string {
@@ -463,24 +520,20 @@ function statusUpdateHtml(data: StatusUpdateData, status: string, meta: { headin
         .join("")
     : "";
 
-  return [
-    "<div style='font-family:Arial,Helvetica,sans-serif;color:#1e293b;max-width:600px;margin:0 auto;'>",
-    "<table role='presentation' width='100%' cellpadding='0' cellspacing='0' style='background:#0A1F45;border-radius:12px 12px 0 0;padding:28px 32px;'>",
-    "<tr><td style='color:#C7A46A;font-size:22px;font-weight:bold;'>Global Line Safaris</td></tr>",
-    "<tr><td style='color:#ffffff;font-size:13px;opacity:.85;padding-top:4px;'>Travel · Safaris · Rwanda &amp; East Africa</td></tr>",
-    "</table>",
-    "<div style='border:1px solid #e2e8f0;border-top:none;border-radius:0 0 12px 12px;padding:32px;background:#ffffff;'>",
-    `<h2 style='margin:0 0 12px;font-size:18px;'>${escapeHtml(meta.heading)}${data.service ? ` — ${escapeHtml(data.service)}` : ""}</h2>`,
-    `<p style='margin:0 0 20px;font-size:14px;line-height:1.6;color:#475569;'>Hi ${escapeHtml(data.name)},</p>`,
-    `<p style='margin:0 0 24px;font-size:14px;line-height:1.6;color:#475569;'>${escapeHtml(meta.body)}</p>`,
-    extraRows
-      ? `<table role='presentation' width='100%' cellpadding='0' cellspacing='0' style='background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:18px 22px;'>${extraRows}</table>`
-      : "",
-    "<p style='margin:24px 0 0;font-size:14px;line-height:1.6;color:#475569;'>If you have any questions, just reply to this email or call us.</p>",
-    `<p style='margin:28px 0 0;font-size:13px;color:#94a3b8;border-top:1px solid #e2e8f0;padding-top:16px;'>Warm regards,<br/>The Global Line Safaris Team<br/><span style='color:#64748b;'>${siteConfig.phone} · ${siteConfig.email}</span></p>`,
-    "</div>",
-    "</div>",
-  ].join("");
+  let body = `${meta.body}`;
+
+  if (data.details) {
+    for (const [k, v] of Object.entries(data.details)) {
+      if (v?.trim()) body += `\n\n${k}: ${v.trim()}`;
+    }
+  }
+  body += "\n\nIf you have any questions, just reply to this email or call us.";
+
+  return emailCard({
+    title: `${meta.heading}${data.service ? ` — ${data.service}` : ""}`,
+    preheader: meta.heading,
+    body,
+  });
 }
 
 function statusUpdateText(data: StatusUpdateData, status: string, meta: { heading: string; body: string }): string {

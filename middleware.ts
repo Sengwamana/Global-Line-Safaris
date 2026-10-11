@@ -24,12 +24,16 @@ function makeNonce(): string {
   return `${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`;
 }
 
-function buildCsp(nonce: string): string {
+function buildCsp(nonce: string, isAdminPath: boolean): string {
   const isProd = process.env.NODE_ENV !== "development";
 
   // Development keeps 'unsafe-inline'/'unsafe-eval' for Fast Refresh to work.
+  // Hybrid approach: strict nonce CSP only for admin (dynamic/sensitive); public
+  // pages are mostly ISR/static so inline scripts would not get nonces from Next.
   const scriptSrc = isProd
-    ? `'self' 'nonce-${nonce}'`
+    ? isAdminPath
+      ? `'self' 'nonce-${nonce}'`
+      : `'self' 'unsafe-inline'`
     : `'self' 'unsafe-inline' 'unsafe-eval'`;
   const styleSrc = isProd ? `'self' 'unsafe-inline'` : `'self' 'unsafe-inline'`;
 
@@ -98,7 +102,8 @@ export function middleware(req: NextRequest) {
   requestHeaders.set("x-nonce", nonce);
 
   const response = NextResponse.next({ request: { headers: requestHeaders } });
-  response.headers.set("Content-Security-Policy", buildCsp(nonce));
+  const isAdminPath = pathname.startsWith("/admin");
+  response.headers.set("Content-Security-Policy", buildCsp(nonce, isAdminPath));
 
   // ─── Add cache-control headers to admin pages ───────────────────
   // Prevent CDN/edge caching of admin content
