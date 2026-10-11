@@ -97,7 +97,7 @@ export default function AdminInquiryDetailPage() {
   };
 
   const handleReply = async (data: Record<string, any>) => {
-    const res = await adminFetch(`/api/admin/inquiries/${id}/reply`, {
+    const res = await adminFetch(`/api/admin/inquiries/${id}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "reply", subject: data.subject, message: data.message }),
