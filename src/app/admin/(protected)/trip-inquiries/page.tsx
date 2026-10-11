@@ -26,6 +26,7 @@ export default function AdminTripInquiriesPage() {
     useAdminList<any>({ endpoint: "/api/admin/trip-inquiries", pageSize: 20 });
   const [editItem, setEditItem] = useState<any>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [replyItem, setReplyItem] = useState<any>(null);
   const { canDelete, deleteItem, setDeleteItem, toggleArchive, confirmDelete } =
     useContentActions<any>(
       "/api/admin/trip-inquiries",
@@ -73,6 +74,22 @@ export default function AdminTripInquiriesPage() {
     } else {
       const e = await res.json().catch(() => ({}));
       toast.error(e.error || "Failed to save trip inquiry");
+    }
+  };
+
+  const handleReply = async (data: Record<string, any>) => {
+    if (!replyItem) return;
+    const res = await fetch(`/api/admin/trip-inquiries/${replyItem.id}/reply`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "reply", subject: data.subject, message: data.message }),
+    });
+    if (res.ok) {
+      toast.success("Reply sent successfully");
+      setReplyItem(null);
+    } else {
+      const e = await res.json().catch(() => ({}));
+      throw new Error(e.error || "Failed to send reply");
     }
   };
 
@@ -144,6 +161,15 @@ export default function AdminTripInquiriesPage() {
             className="text-xs font-semibold text-slate-500 hover:text-brand hover:underline"
           >
             {item.read ? "Unread" : "Read"}
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setReplyItem(item);
+            }}
+            className="text-xs font-semibold text-blue-600 hover:underline"
+          >
+            Reply
           </button>
           <button
             onClick={(e) => {
@@ -277,6 +303,20 @@ export default function AdminTripInquiriesPage() {
         ]}
       />
 
+      <CrudDialog
+        open={Boolean(replyItem)}
+        onClose={() => setReplyItem(null)}
+        onSave={handleReply}
+        title="Send Reply"
+        initial={{
+          subject: replyItem ? `Re: Trip Inquiry - ${replyItem.destination || replyItem.preferredPackage || ""}` : "",
+          message: "",
+        }}
+        fields={[
+          { name: "subject", label: "Subject", type: "text", required: true },
+          { name: "message", label: "Message", type: "textarea", required: true },
+        ]}
+      />
       <ConfirmDialog
         open={!!deleteItem}
         onClose={() => setDeleteItem(null)}

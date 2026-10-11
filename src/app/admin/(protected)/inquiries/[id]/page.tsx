@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { adminFetch } from "@/lib/admin-fetch";
+import { CrudDialog } from "@/components/admin/CrudDialog";
 import Link from "next/link";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -34,6 +35,7 @@ export default function AdminInquiryDetailPage() {
   const [inquiry, setInquiry] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [replyOpen, setReplyOpen] = useState(false);
 
   const loadInquiry = useCallback(async () => {
     try {
@@ -91,6 +93,20 @@ export default function AdminInquiryDetailPage() {
       toast.success(archived ? "Inquiry archived" : "Inquiry unarchived");
     } else {
       toast.error("Failed to update archive status");
+    }
+  };
+
+  const handleReply = async (data: Record<string, any>) => {
+    const res = await adminFetch(`/api/admin/inquiries/${id}/reply`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "reply", subject: data.subject, message: data.message }),
+    });
+    if (res.ok) {
+      toast.success("Reply sent successfully");
+    } else {
+      const e = await res.json().catch(() => ({}));
+      throw new Error(e.error || "Failed to send reply");
     }
   };
 
@@ -158,13 +174,13 @@ export default function AdminInquiryDetailPage() {
 
         {/* Quick Action Bar */}
         <div className="px-6 py-3 bg-slate-50/70 border-b border-slate-100 dark:bg-slate-800/40 dark:border-slate-800 flex flex-wrap gap-2">
-          <a
-            href={`mailto:${inquiry.email}?subject=Global Line Safaris: Regarding your inquiry`}
+          <button
+            onClick={() => setReplyOpen(true)}
             className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200 transition-colors"
           >
             <Mail className="size-3.5 text-blue-500" />
-            Reply via Email
-          </a>
+            Reply
+          </button>
 
           {inquiry.phone && (
             <a
@@ -258,6 +274,20 @@ export default function AdminInquiryDetailPage() {
           </div>
         </div>
       </div>
+      <CrudDialog
+        open={replyOpen}
+        onClose={() => setReplyOpen(false)}
+        onSave={handleReply}
+        title="Send Reply"
+        initial={{
+          subject: `Re: ${inquiry?.service ? inquiry.service : "Global Line Safaris Inquiry"}`,
+          message: "",
+        }}
+        fields={[
+          { name: "subject", label: "Subject", type: "text", required: true },
+          { name: "message", label: "Message", type: "textarea", required: true },
+        ]}
+      />
     </div>
   );
 }
