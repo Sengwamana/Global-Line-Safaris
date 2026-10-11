@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/admin/api-registry";
 import { logAudit } from "@/lib/audit";
-import { sendInquiryStatusUpdate } from "@/lib/services/email";
+import { sendInquiryStatusUpdate, replyToCustomer } from "@/lib/services/email";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { error } = await requireRole("EDITOR");
@@ -77,6 +77,50 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   } catch {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+}
+
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { session, error } = await requireRole("EDITOR");
+  if (error) return error;
+
+  const { id } = await params;
+  const body = await request.json().catch(() => ({}));
+  const action = body.action;
+  if (action === "reply") {
+    const subject = String(body.subject || "").trim();
+    const message = String(body.message || "").trim();
+    if (!subject || !message) {
+      return NextResponse.json({ error: "Subject and message are required" }, { status: 400 });
+    }
+
+    const inquiry = await prisma.inquiry.findUnique({
+      where: { id },
+      select: { email: true, name: true },
+    });
+    if (!inquiry?.email) {
+      return NextResponse.json({ error: "No recipient email found" }, { status: 400 });
+    }
+
+    try {
+      await replyToCustomer({ to: inquiry.email, subject, body: message });
+      await logAudit({
+        userId: session.user.id,
+        action: "inquiry:reply",
+        entity: "Inquiry",
+        entityId: id,
+        details: JSON.stringify({ subject }),
+      });
+      return NextResponse.json({ success: true });
+    } catch (err) {
+      console.error("[inquiry] reply failed", err);
+      return NextResponse.json({ error: "Failed to send reply" }, { status: 500 });
+    }
+  }
+
+  return NextResponse.json({ error: "Invalid action" }, { status: 400 });
 }
 
 export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
