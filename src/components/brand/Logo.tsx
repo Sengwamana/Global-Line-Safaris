@@ -8,6 +8,8 @@ interface LogoProps {
   href?: string;
   size?: "sm" | "md";
   showWordmark?: boolean;
+  /** Custom logo URL from the CMS. When provided, overrides the default logo. */
+  src?: string;
 }
 
 /**
@@ -34,6 +36,7 @@ export function Logo({
   href = "/",
   size = "md",
   showWordmark = true,
+  src,
 }: LogoProps) {
   const styles = sizeStyles[size];
 
@@ -43,14 +46,34 @@ export function Logo({
       aria-label={`${siteConfig.name} — Home`}
       className={cn("flex items-center gap-2.5", className)}
     >
-      <Image
-        src="/gls/logo.png"
-        alt={`${siteConfig.name} logo`}
-        width={logoSizes[size].width}
-        height={logoSizes[size].height}
-        priority
-        className="h-auto w-auto shrink-0 object-contain"
-      />
+      {src ? (
+        /* CMS-provided logo — aspect ratio is unknown, so fit it inside a
+           fixed box rather than assuming one (same approach as the footer). */
+        <span
+          className={cn(
+            "relative shrink-0 overflow-hidden",
+            size === "sm" ? "h-8 w-8" : "h-9 w-9"
+          )}
+        >
+          <Image
+            src={src}
+            alt={`${siteConfig.name} logo`}
+            fill
+            sizes={size === "sm" ? "32px" : "36px"}
+            priority
+            className="object-contain"
+          />
+        </span>
+      ) : (
+        <Image
+          src="/gls/logo.png"
+          alt={`${siteConfig.name} logo`}
+          width={logoSizes[size].width}
+          height={logoSizes[size].height}
+          priority
+          className="h-auto w-auto shrink-0 object-contain"
+        />
+      )}
       {showWordmark && (
         <span className="hidden flex-col leading-none lg:flex">
           <span

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Instagram, Facebook, Linkedin, Twitter } from "lucide-react";
+import { Instagram, Facebook, Linkedin, Twitter, Music2Icon } from "lucide-react";
 import { getSiteSettings } from "@/lib/content/service.server";
 import { NewsletterForm } from "@/components/layout/NewsletterForm";
 import { siteConfig } from "@/lib/site";
@@ -16,6 +16,16 @@ const socialIcons: Record<string, React.ElementType> = {
   Facebook,
   Linkedin,
   "X (Twitter)": Twitter,
+  TikTok: Music2Icon,
+};
+
+// Lowercase map for case-insensitive social label lookups
+const socialIconsLowercase: Record<string, React.ElementType> = {
+  instagram: Instagram,
+  facebook: Facebook,
+  linkedin: Linkedin,
+  "x (twitter)": Twitter,
+  tiktok: Music2Icon,
 };
 
 export async function Footer() {
@@ -25,6 +35,7 @@ export async function Footer() {
   const configuredSocials = {
     Instagram: externalHref(settings.instagram),
     Facebook: externalHref(settings.facebook),
+    TikTok: externalHref(settings.tiktok),
     LinkedIn: externalHref(settings.linkedin),
   };
   const socials = siteConfig.socialLinks
@@ -55,7 +66,7 @@ export async function Footer() {
             {socials.length > 0 && (
               <div className="footer-social">
                 {socials.map((s) => {
-                  const Icon = socialIcons[s.label] ?? Instagram;
+                  const Icon = socialIcons[s.label] ?? socialIconsLowercase[s.label.toLowerCase()] ?? null;
                   return (
                     <a
                       key={s.label}
@@ -136,6 +147,12 @@ export async function Footer() {
             <Link href="/terms">Terms of Use</Link>
           </div>
         </div>
+        <p className="footer-credit">
+          Designed &amp; Developed by{" "}
+          <a href="https://icetechrwanda.com" target="_blank" rel="noopener noreferrer">
+            Ice Tech Rwanda
+          </a>
+        </p>
       </div>
     </footer>
   );

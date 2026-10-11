@@ -9,6 +9,7 @@ import { FloatingWhatsApp } from "@/components/shared/FloatingWhatsApp";
 import { Analytics } from "@/components/analytics/Analytics";
 import { Toaster } from "sonner";
 import { siteConfig } from "@/lib/site";
+import { getSiteSettings } from "@/lib/content/service.server";
 
 const editorial = Cormorant_Garamond({
   variable: "--font-editorial",
@@ -58,9 +59,20 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const settings = await getSiteSettings();
+  const socialLinks = [
+    { label: "Facebook", href: settings.facebook },
+    { label: "Instagram", href: settings.instagram },
+    { label: "TikTok", href: settings.tiktok },
+    { label: "LinkedIn", href: settings.linkedin },
+  ].filter((s) => s.href && s.href !== "#");
+
+  /* Determine favicon from CMS settings */
+  const favicon = settings.favicon || "/favicon.ico";
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -70,13 +82,14 @@ export default function RootLayout({
           title={`${siteConfig.name} — Travel Journal`}
           href="/feed.xml"
         />
+        <link rel="icon" href={favicon} type="image/x-icon" />
       </head>
       <body
         className={`${editorial.variable} ${inter.variable} font-sans antialiased`}
       >
         <ThemeProvider>
           <AdminGuard>
-            <Header />
+            <Header socialLinks={socialLinks} logoUrl={settings.logo || ""} />
           </AdminGuard>
           <main id="main-content" tabIndex={-1} className="min-h-screen">{children}</main>
           <AdminGuard>

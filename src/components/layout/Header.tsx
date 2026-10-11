@@ -10,10 +10,32 @@ import {
   ChevronDown,
   Phone,
   Mail,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Music2Icon,
 } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { mainNav, ctaNav, type NavItem } from "@/lib/navigation";
 import { siteConfig } from "@/lib/site";
+
+interface SocialLink {
+  label: string;
+  href: string;
+}
+
+interface HeaderProps {
+  socialLinks?: SocialLink[];
+  /** CMS-configurable logo URL. Falls back to the default logo when empty. */
+  logoUrl?: string;
+}
+
+const socialIcons: Record<string, React.ElementType> = {
+  Facebook: Facebook,
+  Instagram: Instagram,
+  TikTok: Music2Icon,
+  LinkedIn: Linkedin,
+};
 
 /** Width at which the CSS swaps the link bar for the mobile sheet. Keep in step
  *  with the media queries in src/styles/safari.css. */
@@ -28,7 +50,7 @@ const subscribeToScroll = (onChange: () => void) => {
   return () => window.removeEventListener("scroll", onChange);
 };
 
-export function Header() {
+export function Header({ socialLinks = [], logoUrl }: HeaderProps) {
   const pathname = usePathname();
   // Menu state is keyed to the route it was opened on, so a navigation closes
   // the sheet without needing an effect to close it.
@@ -146,23 +168,29 @@ export function Header() {
               {siteConfig.hours}
             </span>
             <div className="safari-topbar-socials">
-              {siteConfig.socialLinks.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {social.label}
-                </a>
-              ))}
+              {socialLinks.map((social) => {
+                const Icon = socialIcons[social.label] ?? null;
+                if (!Icon) return null;
+                return (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={social.label}
+                    title={social.label}
+                  >
+                    <Icon width={13} height={13} />
+                  </a>
+                );
+              })}
             </div>
           </div>
         </div>
 
         <div className="safari-nav">
           <div className="safari-brand">
-            <Logo showWordmark={false} className="safari-brand-logo" />
+            <Logo showWordmark={false} className="safari-brand-logo" src={logoUrl} />
             <span className="safari-brand-wordmark">
               <span className="safari-brand-name">{siteConfig.shortName}</span>
               <span className="safari-brand-tagline">{siteConfig.tagline}</span>
@@ -274,7 +302,7 @@ export function Header() {
       >
         <div className="mobile-nav-header">
           <span className="safari-brand">
-            <Logo showWordmark={false} />
+            <Logo showWordmark={false} src={logoUrl} />
             <span className="safari-brand-wordmark">
               <span className="safari-brand-name">{siteConfig.shortName}</span>
             </span>
@@ -316,7 +344,7 @@ export function Header() {
           </div>
 
           <div className="mobile-nav-socials">
-            {siteConfig.socialLinks.map((social) => (
+            {socialLinks.map((social) => (
               <a
                 key={social.label}
                 href={social.href}
