@@ -340,7 +340,10 @@ async function loadSiteSettings(): Promise<SiteSettings> {
   const rows = await prisma.setting.findMany();
   const s = new Map(rows.map((r) => [r.key, r.value]));
 
-  const get = (key: string, fallback: string = "") => (s.has(key) ? (s.get(key) || "") : fallback);
+  const get = (key: string, fallback: string = ""): string => {
+    const v = s.get(key)?.trim();
+    return v ? v : fallback;
+  };
 
   return {
     companyName: get("companyName", siteConfig.name),

@@ -14,7 +14,7 @@ function externalHref(value: string) {
 const socialIcons: Record<string, React.ElementType> = {
   Instagram,
   Facebook,
-  Linkedin,
+  LinkedIn: Linkedin,
   "X (Twitter)": Twitter,
   TikTok: Music2Icon,
 };
@@ -30,17 +30,16 @@ const socialIconsLowercase: Record<string, React.ElementType> = {
 
 export async function Footer() {
   const settings = await getSiteSettings();
-  // A newly-installed CMS may not have social values yet. Keep verified
-  // defaults visible until an editor replaces them in Basic Information.
-  const configuredSocials = {
-    Instagram: externalHref(settings.instagram),
-    Facebook: externalHref(settings.facebook),
-    TikTok: externalHref(settings.tiktok),
-    LinkedIn: externalHref(settings.linkedin),
-  };
-  const socials = siteConfig.socialLinks
-    .filter((social) => social.label !== "X (Twitter)")
-    .map((social) => ({ label: social.label, href: configuredSocials[social.label as keyof typeof configuredSocials] || social.href }));
+
+  // Build social links directly from CMS settings, falling back to siteConfig
+  // hardcoded URLs. This avoids label-matching fragility and ensures icons
+  // always render when a valid URL exists in either source.
+  const socials = [
+    { label: "Facebook", href: externalHref(settings.facebook) ?? siteConfig.socialLinks.find((l) => l.label === "Facebook")?.href ?? null },
+    { label: "Instagram", href: externalHref(settings.instagram) ?? siteConfig.socialLinks.find((l) => l.label === "Instagram")?.href ?? null },
+    { label: "TikTok", href: externalHref(settings.tiktok) },
+    { label: "LinkedIn", href: externalHref(settings.linkedin) ?? siteConfig.socialLinks.find((l) => l.label === "LinkedIn")?.href ?? null },
+  ].filter((s): s is { label: string; href: string } => s.href !== null && s.href !== undefined);
 
   return (
     <footer className="safari-footer">
