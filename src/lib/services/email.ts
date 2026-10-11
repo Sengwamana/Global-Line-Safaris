@@ -147,10 +147,35 @@ export async function notifyAdminOfLead(data: LeadMailData, adminEmail: string) 
   const msg = data.message?.trim();
   if (msg) text += `\nMessage:\n${msg}\n`;
 
+  const htmlBody = [
+    `${labels[data.type]} — ${data.service || "General"}`,
+    "",
+    `Name: ${data.name}`,
+    `Email: ${data.email}`,
+    data.phone ? `Phone: ${data.phone}` : "",
+    data.company ? `Company: ${data.company}` : "",
+    data.service ? `Service: ${data.service}` : "",
+    ...(data.extra
+      ? Object.entries(data.extra)
+          .filter(([, v]) => v)
+          .map(([k, v]) => `${k}: ${v}`)
+      : []),
+    `Date: ${data.createdAt.toLocaleString()}`,
+    "",
+    data.message?.trim() ? `Message:\n${data.message.trim()}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+
   await sendEmail({
     to: adminEmail,
     subject: `${labels[data.type]} — ${data.service || "Website"}`.slice(0, 140),
     text,
+    html: emailCard({
+      title: labels[data.type],
+      preheader: data.service || "New lead",
+      body: htmlBody,
+    }),
   });
 }
 
@@ -179,10 +204,23 @@ export async function sendLeadConfirmation(email: string, type: LeadMailData["ty
     siteConfig.location,
   ].join("\n");
 
+  const htmlBody = [
+    `Dear traveler,`,
+    `Thank you for reaching out. We have received your ${nouns[type]} and our team will get back to you within one business day.`,
+    preferredContact === "phone"
+      ? `We will contact you by phone.`
+      : `We will respond to your inquiry by email.`,
+  ].join("\n\n");
+
   await sendEmail({
     to: email,
     subject: subjects[type],
     text,
+    html: emailCard({
+      title: subjects[type],
+      preheader: "We've received your message",
+      body: htmlBody,
+    }),
   });
 }
 
@@ -191,6 +229,11 @@ export async function replyToCustomer(options: { to: string; subject: string; bo
     to: options.to,
     subject: options.subject,
     text: options.body,
+    html: emailCard({
+      title: options.subject,
+      preheader: "Message from Global Line Safaris",
+      body: options.body.replace(/\n/g, "\n\n"),
+    }),
   });
 }
 
@@ -212,10 +255,23 @@ export async function sendPasswordResetEmail(email: string, resetUrl: string) {
     siteConfig.phone,
   ].join("\n");
 
+  const htmlBody = [
+    "We received a request to reset your Global Line Safaris admin password.",
+    "Open the following link to choose a new password. It expires in 30 minutes:",
+    resetUrl,
+    "If you didn't request this, you can safely ignore this email — your password will not change.",
+  ].join("\n\n");
+
   await sendEmail({
     to: email,
     subject: "Reset your Global Line Safaris admin password",
     text,
+    html: emailCard({
+      title: "Reset Your Password",
+      preheader: "Action required",
+      body: htmlBody,
+      cta: { label: "Reset Password", href: resetUrl },
+    }),
   });
 }
 
@@ -239,10 +295,21 @@ export async function sendNewsletterConfirmation(email: string) {
     siteConfig.location,
   ].join("\n");
 
+  const htmlBody = [
+    "Thank you for subscribing to the Global Line Safaris newsletter. You'll receive travel inspiration and updates about Rwanda and East Africa.",
+    "If you did not request this subscription, you can safely ignore this email.",
+    `To unsubscribe at any time, visit: ${siteConfig.siteUrl}/unsubscribe`,
+  ].join("\n\n");
+
   await sendEmail({
     to: email,
     subject: `Welcome to the ${siteConfig.name} newsletter`,
     text,
+    html: emailCard({
+      title: `Welcome to the ${siteConfig.name} Newsletter`,
+      preheader: "You're subscribed",
+      body: htmlBody,
+    }),
   });
 }
 
