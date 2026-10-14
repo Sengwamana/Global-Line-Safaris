@@ -31,7 +31,7 @@ interface PartnerBadge {
 
 type Partner = PartnerLogo | PartnerBadge;
 
-const PARTNERS: Partner[] = [
+const DEFAULT_PARTNERS: Partner[] = [
   {
     kind: "logo",
     name: "Rwanda Development Board",
@@ -107,6 +107,15 @@ const PARTNERS: Partner[] = [
     height: 326,
   },
   {
+    kind: "logo",
+    name: "BPN Rwanda",
+    src: "/partners/bpn.png",
+    alt: "Business Professionals Network (BPN) Rwanda",
+    url: "https://bpn.rw/",
+    width: 1701,
+    height: 459,
+  },
+  {
     kind: "badge",
     name: "Volcanoes National Park",
     lines: ["Volcanoes", "National Park"],
@@ -174,10 +183,41 @@ export function PartnersSection({
 }: {
   section?: HomepageSectionData;
 }) {
-  if (!PARTNERS.length) return null;
+  const cmsPartners = Array.isArray(section?.items)
+    ? (section.items as any[])
+        .map((item) => {
+          if (!item || typeof item !== "object") return null;
+          if (item.kind === "badge") {
+            return {
+              kind: "badge" as const,
+              name: item.name || item.title || "",
+              lines: Array.isArray(item.lines)
+                ? item.lines.filter((l: any) => typeof l === "string")
+                : [item.line1, item.line2].filter((l: any) => typeof l === "string"),
+            };
+          }
+          if (item.src || item.image || item.url || item.name) {
+            return {
+              kind: "logo" as const,
+              name: item.name || item.title || "",
+              src: item.src || item.image || "",
+              alt: item.alt || item.name || item.title || "",
+              url: item.url || "#",
+              width: Number(item.width) || 200,
+              height: Number(item.height) || 100,
+              reversed: Boolean(item.reversed),
+            };
+          }
+          return null;
+        })
+        .filter(Boolean)
+    : [];
+
+  const partners = cmsPartners.length ? (cmsPartners as Partner[]) : DEFAULT_PARTNERS;
+  if (!partners.length) return null;
 
   // Duplicate the list for a seamless infinite scroll loop
-  const doubled = [...PARTNERS, ...PARTNERS];
+  const doubled = [...partners, ...partners];
 
   return (
     <section className="safari-section partners-section">

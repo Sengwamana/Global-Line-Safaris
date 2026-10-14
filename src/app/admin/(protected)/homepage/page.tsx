@@ -77,7 +77,11 @@ export default function AdminHomepagePage() {
 
   const addItem = (key: string) => {
     const current = Array.isArray(section.items) ? [...section.items] : [];
-    current.push({ icon: "", title: "", description: "" });
+    if (key === "partners") {
+      current.push({ kind: "logo", name: "", alt: "", src: "", url: "", width: 200, height: 100, reversed: false });
+    } else {
+      current.push({ icon: "", title: "", description: "" });
+    }
     updateField(key, "items", current);
   };
 
@@ -144,14 +148,51 @@ export default function AdminHomepagePage() {
               <div className="space-y-3">
                 {items.map((item: any, idx: number) => (
                   <div key={idx} className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-3 space-y-2">
-                    <div className="grid grid-cols-2 gap-2">
-                      <div><Label className="text-[10px]">Icon</Label><Input value={item.icon ?? ""} onChange={e => updateItemField(activeSection, idx, "icon", e.target.value)} className="mt-1" placeholder="Briefcase" /></div>
-                      <div className="flex items-end justify-end">
-                        <Button type="button" variant="ghost" size="sm" className="text-red-500" onClick={() => removeItem(activeSection, idx)}><Trash2 className="size-3.5" /></Button>
-                      </div>
-                    </div>
-                    <div><Label className="text-[10px]">Title</Label><Input value={item.title ?? ""} onChange={e => updateItemField(activeSection, idx, "title", e.target.value)} className="mt-1" /></div>
-                    <div><Label className="text-[10px]">Description</Label><textarea value={item.description ?? ""} onChange={e => updateItemField(activeSection, idx, "description", e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm min-h-[60px]" /></div>
+                     {activeSection === "partners" ? (
+                       <>
+                         <div className="flex items-center justify-between">
+                           <div className="flex gap-2">
+                             <Button type="button" variant={item.kind !== "badge" ? "brand" : "outline"} size="xs" className="rounded-lg text-xs h-7" onClick={() => { const c = [...items]; c[idx] = { ...c[idx], kind: "logo" }; updateField(activeSection, "items", c); }}>Logo</Button>
+                             <Button type="button" variant={item.kind === "badge" ? "brand" : "outline"} size="xs" className="rounded-lg text-xs h-7" onClick={() => { const c = [...items]; c[idx] = { kind: "badge", name: item.name || "", lines: item.lines || ["", ""] }; updateField(activeSection, "items", c); }}>Badge</Button>
+                           </div>
+                           <Button type="button" variant="ghost" size="sm" className="text-red-500" onClick={() => removeItem(activeSection, idx)}><Trash2 className="size-3.5" /></Button>
+                         </div>
+                         <div><Label className="text-[10px]">Name</Label><Input value={item.name ?? item.title ?? ""} onChange={e => { updateItemField(activeSection, idx, "name", e.target.value); updateItemField(activeSection, idx, "title", e.target.value); }} className="mt-1" /></div>
+                         {item.kind !== "badge" ? (
+                           <>
+                             <div className="grid grid-cols-2 gap-2">
+                               <div><Label className="text-[10px]">Image SRC</Label><Input value={item.src ?? item.image ?? ""} onChange={e => { updateItemField(activeSection, idx, "src", e.target.value); updateItemField(activeSection, idx, "image", e.target.value); }} className="mt-1" placeholder="/partners/..." /></div>
+                               <div><Label className="text-[10px]">URL</Label><Input value={item.url ?? ""} onChange={e => updateItemField(activeSection, idx, "url", e.target.value)} className="mt-1" placeholder="https://..." /></div>
+                             </div>
+                             <div><Label className="text-[10px]">Alt Text</Label><Input value={item.alt ?? ""} onChange={e => updateItemField(activeSection, idx, "alt", e.target.value)} className="mt-1" /></div>
+                             <div className="grid grid-cols-3 gap-2">
+                               <div><Label className="text-[10px]">Width</Label><Input type="number" value={item.width ?? 200} onChange={e => updateItemField(activeSection, idx, "width", e.target.value)} className="mt-1" /></div>
+                               <div><Label className="text-[10px]">Height</Label><Input type="number" value={item.height ?? 100} onChange={e => updateItemField(activeSection, idx, "height", e.target.value)} className="mt-1" /></div>
+                               <div className="flex items-end gap-2">
+                                 <input id={`rev-${idx}`} type="checkbox" checked={!!item.reversed} onChange={e => { const c = [...items]; c[idx] = { ...c[idx], reversed: e.target.checked }; updateField(activeSection, "items", c); }} />
+                                 <Label htmlFor={`rev-${idx}`} className="text-[10px]">Reversed (white on dark)</Label>
+                               </div>
+                             </div>
+                           </>
+                         ) : (
+                           <>
+                             <div><Label className="text-[10px]">Line 1</Label><Input value={Array.isArray(item.lines) ? (item.lines[0] ?? "") : (item.line1 ?? "")} onChange={e => { const c = [...items]; const lines = Array.isArray(c[idx].lines) ? [...c[idx].lines] : ["", ""]; lines[0] = e.target.value; c[idx] = { ...c[idx], lines }; updateField(activeSection, "items", c); }} className="mt-1" /></div>
+                             <div><Label className="text-[10px]">Line 2</Label><Input value={Array.isArray(item.lines) ? (item.lines[1] ?? "") : (item.line2 ?? "")} onChange={e => { const c = [...items]; const lines = Array.isArray(c[idx].lines) ? [...c[idx].lines] : ["", ""]; lines[1] = e.target.value; c[idx] = { ...c[idx], lines }; updateField(activeSection, "items", c); }} className="mt-1" /></div>
+                           </>
+                         )}
+                       </>
+                     ) : (
+                       <>
+                         <div className="grid grid-cols-2 gap-2">
+                           <div><Label className="text-[10px]">Icon</Label><Input value={item.icon ?? ""} onChange={e => updateItemField(activeSection, idx, "icon", e.target.value)} className="mt-1" placeholder="Briefcase" /></div>
+                           <div className="flex items-end justify-end">
+                             <Button type="button" variant="ghost" size="sm" className="text-red-500" onClick={() => removeItem(activeSection, idx)}><Trash2 className="size-3.5" /></Button>
+                           </div>
+                         </div>
+                         <div><Label className="text-[10px]">Title</Label><Input value={item.title ?? ""} onChange={e => updateItemField(activeSection, idx, "title", e.target.value)} className="mt-1" /></div>
+                         <div><Label className="text-[10px]">Description</Label><textarea value={item.description ?? ""} onChange={e => updateItemField(activeSection, idx, "description", e.target.value)} className="mt-1 w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm min-h-[60px]" /></div>
+                       </>
+                     )}
                   </div>
                 ))}
               </div>

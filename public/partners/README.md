@@ -13,6 +13,7 @@ Nothing is traced, redrawn, recoloured or substituted.
 | `akagera-national-park.png` | Akagera National Park | `africanparks.org/sites/default/files/2018-02/akagera_logo_0.png` | Full-colour mark, as published. Transparent padding trimmed. |
 | `nyungwe-national-park.png` | Nyungwe National Park | `africanparks.org/sites/default/files/2021-11/AFRICAN PARKS - Nyungwe Logo - white_0.png` | Published **solid white only**. Rendered on a dark card so it is legible; the file itself is unmodified. |
 | `rwanda-tourism.png` | Visit Rwanda | `visitrwanda.com/wp-content/uploads/2018/07/footer-logo.png` | White variant, chosen to sit on the dark card. The dark variant (`header-logo.png`) exists if the card treatment changes. |
+| `bpn.png` | BPN Rwanda (Business Professionals Network) | `bpn.rw/wp-content/uploads/2025/02/BPN_Logo_BGnix300dpi.png` | Full-colour mark on a transparent background, as published. Sits on the light card. |
 
 ## Deliberately not included
 

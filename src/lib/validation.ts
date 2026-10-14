@@ -145,10 +145,10 @@ export const homepageSectionSchema = z.object({
   title: z.string().max(300).nullable().optional(),
   subtitle: z.string().max(500).nullable().optional(),
   description: z.string().max(5000).nullable().optional(),
-  items: z.array(z.object({ icon: z.string(), title: z.string(), description: z.string() })).nullable().optional(),
+  items: z.array(z.any()).nullable().optional(),
   imageKey: z.string().max(200).nullable().optional(),
   ctaLabel: z.string().max(200).nullable().optional(),
-  ctaUrl: z.string().max(500).nullable().optional(),
+  ctaUrl: z.string().max(200).nullable().optional(),
 });
 
 export const seoSettingSchema = z.object({
