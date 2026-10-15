@@ -6,7 +6,7 @@ import type { NextConfig } from "next";
 // (Vercel injects project env vars during the build).
 function r2RemotePatterns(): { protocol: "https"; hostname: string }[] {
   const patterns: { protocol: "https"; hostname: string }[] = [
-    { protocol: "https", hostname: "pub-*.r2.dev" },
+    { protocol: "https", hostname: "*.r2.dev" },
   ];
   const publicUrl = process.env.R2_PUBLIC_URL?.trim();
   if (publicUrl) {

@@ -49,20 +49,24 @@ function buildCsp(nonce: string, isAdminPath: boolean): string {
     : "";
   const gaImgSrc = gaId ? " https://www.google-analytics.com" : "";
 
-  // Cloudflare R2 public assets: r2.dev subdomains plus an optional custom
-  // domain supplied via R2_PUBLIC_URL (read at build time in middleware).
+  // Cloudflare R2 public assets. CSP host-source only supports a leading "*."
+  // subdomain wildcard — partial-label patterns like "pub-*" are treated as a
+  // literal host and never match. Prefer the exact origin from R2_PUBLIC_URL
+  // (also covers custom domains), and additionally allow any r2.dev subdomain
+  // as a fallback so r2.dev URLs work even if the var isn't inlined in the
+  // middleware bundle at build time.
   const r2HostSrc = (() => {
-    let extra = " https://pub-*.r2.dev";
+    let extra = "";
     const publicUrl = process.env.R2_PUBLIC_URL?.trim();
     if (publicUrl) {
       try {
         const { origin } = new URL(publicUrl);
-        if (origin && !origin.includes(".r2.dev")) extra += ` ${origin}`;
+        if (origin) extra += ` ${origin}`;
       } catch {
         /* ignore malformed R2_PUBLIC_URL */
       }
     }
-    return extra;
+    return extra + " https://*.r2.dev";
   })();
 
   return [
