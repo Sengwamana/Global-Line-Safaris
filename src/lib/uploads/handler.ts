@@ -1,15 +1,17 @@
 /**
  * Upload handler: validates files and stores them.
  *
- * Backends:
+ * Backends (in priority order):
  *  - Vercel Blob (@vercel/blob) when BLOB_READ_WRITE_TOKEN is set (Vercel/production).
- *  - Local filesystem under public/uploads when Blob is not configured (local dev /
+ *  - Cloudflare R2 (@aws-sdk/client-s3) when the R2_* vars are set (free 10 GB, zero egress).
+ *  - Local filesystem under public/uploads when neither is configured (local dev /
  *    self-hosted), preserving the previous behavior.
  * Returns metadata for Prisma Media record creation.
  */
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { isBlobConfigured } from "@/lib/uploads/config";
+import { isR2Configured, putR2Object } from "@/lib/uploads/r2";
 
 const MAX_FILE_SIZE = Number(process.env.RESOURCE_MAX_UPLOAD_BYTES ?? 5 * 1024 * 1024); // 5MB default
 
@@ -177,14 +179,31 @@ export async function processUpload(file: File, detectedMime?: string): Promise<
     return { url, name: file.name, mimeType: finalMime, size: buffer?.length ?? file.size, width, height };
   }
 
+  if (isR2Configured()) {
+    // Cloudflare R2 (S3-compatible). Mirror the local subdirectory layout so the
+    // stored URL structure stays predictable: uploads/YYYY/MM/<filename>.
+    const now = new Date();
+    const key = path.posix.join(
+      "uploads",
+      String(now.getFullYear()),
+      String(now.getMonth() + 1).padStart(2, "0"),
+      uploadFilename
+    );
+    const body = buffer ?? Buffer.from(await file.arrayBuffer());
+    const { url } = await putR2Object(key, body, finalMime);
+    return { url, name: file.name, mimeType: finalMime, size: body.length, width, height };
+  }
+
   // Local filesystem fallback (local dev / self-hosted).
   // NOTE: In serverless environments (Vercel, etc.) the filesystem is read-only
   // during requests, so a local write here would fail and surface as a 400.
-  // Require Vercel Blob (or raise a clear error) instead of failing silently.
-  if (!isBlobConfigured() && process.env.NODE_ENV === "production" && process.env.VERCEL === "1") {
+  // Require a remote backend (Vercel Blob or Cloudflare R2) or raise a clear
+  // error instead of failing silently.
+  if (process.env.NODE_ENV === "production" && process.env.VERCEL === "1") {
     throw new Error(
       "Upload storage is not configured for this environment. " +
-        "Set BLOB_READ_WRITE_TOKEN (Vercel Blob) to enable file uploads, or use 'Add by URL'. " +
+        "Set BLOB_READ_WRITE_TOKEN (Vercel Blob) or the R2_* variables (Cloudflare R2) " +
+        "to enable file uploads, or use 'Add by URL'. " +
         `(vercel=${process.env.VERCEL === "1"}, nodeEnv=${process.env.NODE_ENV})`
     );
   }

@@ -7,7 +7,8 @@ Two production paths are supported:
   machine (`deploy/global-line-safaris-cms.service`).
 
 The code is already configured for both. Uploads use **Vercel Blob** when
-`BLOB_READ_WRITE_TOKEN` is set, otherwise fall back to the local filesystem.
+`BLOB_READ_WRITE_TOKEN` is set, otherwise **Cloudflare R2** when the `R2_*`
+variables are set, otherwise fall back to the local filesystem.
 Rate limiting uses **Upstash Redis** when configured, otherwise an in-memory fallback.
 
 ---
@@ -48,10 +49,33 @@ DATABASE_URL="<pooled-url>" DIRECT_URL="<direct-url>" npm run db:seed
 Copy values from `deploy/.env.vercel.example` into **Settings → Environment Variables**:
 `NEXT_PUBLIC_APP_URL`, `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, `AUTH_URL`,
 `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, `BLOB_READ_WRITE_TOKEN` (from Vercel Storage → Blob),
-`UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, plus SMTP vars and
-`UPLOADS_SIGNING_SECRET` if desired.
+`UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, plus SMTP vars.
 
 Then add Blob storage and Upstash Redis via **Storage** tabs (or use your own instances).
+
+#### Cloudflare R2 (free alternative to Vercel Blob)
+
+Vercel Blob's Hobby tier is limited to 1 GB and non-commercial use only. For a
+production tourism site, **Cloudflare R2** is the recommended free backend: 10 GB
+storage, zero egress fees, and commercial use allowed. Set these env vars (Blob,
+if also set, still takes priority):
+
+| Var | Notes |
+|---|---|
+| `R2_ACCOUNT_ID` | Cloudflare account ID |
+| `R2_ACCESS_KEY_ID` | R2 API token access key |
+| `R2_SECRET_ACCESS_KEY` | R2 API token secret |
+| `R2_BUCKET_NAME` | e.g. `global-line-safaris-media` |
+| `R2_PUBLIC_URL` | public base URL, e.g. `https://pub-xxxx.r2.dev` or a custom domain |
+
+Setup: create a bucket + API token in the Cloudflare dashboard, enable **public
+access** on the bucket, and set `R2_PUBLIC_URL` to its public base URL. Because
+`next/image` remote patterns and the CSP are generated at build time, redeploy
+after adding/changing `R2_PUBLIC_URL`. A custom domain (rather than an r2.dev URL)
+is best for production so the CSP/remote-pattern host is stable.
+
+Confirm the active backend at runtime via `GET /api/admin/media/storage-status`
+(ADMIN role) — `backend` is `blob`, `r2`, or `local`.
 
 ### 5. Deploy
 
@@ -180,10 +204,10 @@ still returns success (no enumeration).
 | `DIRECT_URL` | server | Neon **direct** (Prisma CLI/migrations) |
 | `AUTH_SECRET`/`NEXTAUTH_SECRET` | server | must match; random 64-char |
 | `AUTH_URL`/`NEXTAUTH_URL` | server | real URL |
-| `BLOB_READ_WRITE_TOKEN` | server | Vercel Blob |
+| `BLOB_READ_WRITE_TOKEN` | server | Vercel Blob (priority 1) |
+| `R2_ACCOUNT_ID`/`R2_ACCESS_KEY_ID`/`R2_SECRET_ACCESS_KEY`/`R2_BUCKET_NAME`/`R2_PUBLIC_URL` | server | Cloudflare R2 (priority 2; free 10 GB, zero egress) |
 | `UPSTASH_REDIS_REST_URL`/`_TOKEN` | server | Upstash Redis |
 | `SMTP_*`, `EMAIL_FROM` | server | for real email delivery |
-| `UPLOADS_SIGNING_SECRET` | server | optional, falls back to NEXTAUTH_SECRET |
 | `ADMIN_EMAIL`/`ADMIN_PASSWORD` | seed | bootstrap admin |
 | `NEXT_PUBLIC_GA_MEASUREMENT_ID` | client/build | optional GA4; enables analytics + opens CSP |
 | `LOG_LEVEL` | server | default `info` |

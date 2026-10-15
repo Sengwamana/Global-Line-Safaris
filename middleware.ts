@@ -49,13 +49,29 @@ function buildCsp(nonce: string, isAdminPath: boolean): string {
     : "";
   const gaImgSrc = gaId ? " https://www.google-analytics.com" : "";
 
+  // Cloudflare R2 public assets: r2.dev subdomains plus an optional custom
+  // domain supplied via R2_PUBLIC_URL (read at build time in middleware).
+  const r2HostSrc = (() => {
+    let extra = " https://pub-*.r2.dev";
+    const publicUrl = process.env.R2_PUBLIC_URL?.trim();
+    if (publicUrl) {
+      try {
+        const { origin } = new URL(publicUrl);
+        if (origin && !origin.includes(".r2.dev")) extra += ` ${origin}`;
+      } catch {
+        /* ignore malformed R2_PUBLIC_URL */
+      }
+    }
+    return extra;
+  })();
+
   return [
     "default-src 'self'",
     `script-src ${scriptSrc}${gaScriptSrc}`,
     `style-src ${styleSrc}`,
-    "img-src 'self' data: blob: https://*.blob.vercel-storage.com" + gaImgSrc,
+    "img-src 'self' data: blob: https://*.blob.vercel-storage.com" + r2HostSrc + gaImgSrc,
     "font-src 'self' data:",
-    "connect-src 'self' https://*.blob.vercel-storage.com" + gaConnectSrc,
+    "connect-src 'self' https://*.blob.vercel-storage.com" + r2HostSrc + gaConnectSrc,
     "object-src 'none'",
     "frame-ancestors 'none'",
     "base-uri 'self'",

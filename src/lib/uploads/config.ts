@@ -1,15 +1,17 @@
 /**
- * Centralized Vercel Blob configuration.
+ * Centralized storage configuration.
  *
  * This module is the single source of truth for how the app detects whether
- * Vercel Blob storage is configured. It must only ever be imported from
- * server-side code (API routes / server actions) — the token is a server-only
- * secret and must never be exposed to the browser or prefixed with
- * NEXT_PUBLIC_.
+ * Vercel Blob or Cloudflare R2 storage is configured. It must only ever be
+ * imported from server-side code (API routes / server actions) — the tokens
+ * are server-only secrets and must never be exposed to the browser or prefixed
+ * with NEXT_PUBLIC_.
  *
- * The token value itself is NEVER logged or returned; we only ever surface a
- * boolean that reports whether Blob storage is available.
+ * Secret values themselves are NEVER logged or returned; we only ever surface a
+ * boolean/backend name that reports which storage backend is available.
  */
+import { isR2Configured } from "@/lib/uploads/r2";
+
 const BLOB_ENV_VAR = "BLOB_READ_WRITE_TOKEN";
 
 /**
@@ -42,4 +44,17 @@ export function getBlobConfigStatus(): { configured: boolean; backend: "blob" | 
   return isBlobConfigured()
     ? { configured: true, backend: "blob" }
     : { configured: false, backend: "local" };
+}
+
+export type StorageBackend = "blob" | "r2" | "local";
+
+/**
+ * Combined storage status across all backends. Priority mirrors the upload
+ * handler: Vercel Blob wins over Cloudflare R2, which wins over local disk.
+ * Only reports whether each backend is configured — never secret values.
+ */
+export function getStorageConfigStatus(): { configured: boolean; backend: StorageBackend } {
+  if (isBlobConfigured()) return { configured: true, backend: "blob" };
+  if (isR2Configured()) return { configured: true, backend: "r2" };
+  return { configured: false, backend: "local" };
 }

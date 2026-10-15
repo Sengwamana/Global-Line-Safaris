@@ -1,5 +1,27 @@
 import type { NextConfig } from "next";
 
+// Cloudflare R2 public assets are served from either an r2.dev subdomain
+// (pub-*.r2.dev) or a custom domain. Remote patterns are evaluated at build
+// time, so a custom R2 domain must be present in R2_PUBLIC_URL at build time
+// (Vercel injects project env vars during the build).
+function r2RemotePatterns(): { protocol: "https"; hostname: string }[] {
+  const patterns: { protocol: "https"; hostname: string }[] = [
+    { protocol: "https", hostname: "pub-*.r2.dev" },
+  ];
+  const publicUrl = process.env.R2_PUBLIC_URL?.trim();
+  if (publicUrl) {
+    try {
+      const { hostname } = new URL(publicUrl);
+      if (hostname && !hostname.endsWith(".r2.dev")) {
+        patterns.push({ protocol: "https", hostname });
+      }
+    } catch {
+      /* ignore malformed R2_PUBLIC_URL */
+    }
+  }
+  return patterns;
+}
+
 const nextConfig: NextConfig = {
   images: {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -10,6 +32,7 @@ const nextConfig: NextConfig = {
         // Vercel Blob storage (may live on a custom store host)
         hostname: "**.blob.vercel-storage.com",
       },
+      ...r2RemotePatterns(),
     ],
   },
   headers: async () => [

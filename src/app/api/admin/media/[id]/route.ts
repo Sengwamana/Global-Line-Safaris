@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/admin/api-registry";
 import { logAudit } from "@/lib/audit";
+import { isR2Configured, getR2KeyFromUrl, deleteR2Object } from "@/lib/uploads/r2";
 
-// Blob deletion uses Node-only APIs (fs/path) and the server-only blob token.
+// Blob/R2 deletion uses Node-only APIs (fs/path, AWS SDK) and server-only tokens.
 export const runtime = "nodejs";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -61,6 +62,16 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
         const { del } = await import("@vercel/blob");
         await del(media.url);
       } catch { /* ignore blob deletion errors */ }
+    }
+
+    // Remove from Cloudflare R2 if hosted there.
+    if (isR2Configured() && media.url) {
+      const key = getR2KeyFromUrl(media.url);
+      if (key) {
+        try {
+          await deleteR2Object(key);
+        } catch { /* ignore R2 deletion errors */ }
+      }
     }
 
     // Remove from local filesystem if hosted locally (public/uploads/...).
