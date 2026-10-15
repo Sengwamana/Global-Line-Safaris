@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { X } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
@@ -21,8 +21,8 @@ export function GalleryGrid({ images }: { images: GalleryImage[] }) {
   /* ------------------------------------------------------------------ */
   // Keyboard navigation (left/right arrows) while lightbox is open
   /* ------------------------------------------------------------------ */
-  useCallback(
-    (e: KeyboardEvent) => {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (!lightboxOpen) return;
       e.preventDefault();
       if (e.key === "ArrowRight") {
@@ -32,16 +32,10 @@ export function GalleryGrid({ images }: { images: GalleryImage[] }) {
       } else if (e.key === "Escape") {
         setLightboxOpen(false);
       }
-    },
-    [lightboxOpen, images.length]
-  );
-
-  if (!images.length)
-    return (
-      <p className="py-16 text-center">
-        Travel photographs will appear here. Explore our destinations for inspiration.
-      </p>
-    );
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [lightboxOpen, images.length]);
 
   const handleImageClick = useCallback(
     (image: GalleryImage) => {
@@ -50,6 +44,13 @@ export function GalleryGrid({ images }: { images: GalleryImage[] }) {
     },
     [images]
   );
+
+  if (!images.length)
+    return (
+      <p className="py-16 text-center">
+        Travel photographs will appear here. Explore our destinations for inspiration.
+      </p>
+    );
 
   return (
     <>
